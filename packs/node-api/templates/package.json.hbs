@@ -1,0 +1,51 @@
+{
+  "name": "{{ project.name }}",
+  "version": "0.1.0",
+  "description": "{{ project.description }}",
+  {{#if project.author}}
+  "author": "{{ project.author }}",
+  {{/if}}
+  {{#if project.license}}
+  "license": "{{ project.license }}",
+  {{/if}}
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    {{#if (eq tooling.linter.tool 'eslint')}}
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    {{/if}}
+    {{#if (eq tooling.formatter.tool 'prettier')}}
+    "format": "prettier --write \"src/**/*.ts\"",
+    {{/if}}
+    {{#if (eq tooling.testing.framework 'vitest')}}
+    "test": "vitest run",
+    "test:watch": "vitest",
+    {{#if tooling.testing.coverage}}
+    "test:coverage": "vitest run --coverage",
+    {{/if}}
+    {{else if (eq tooling.testing.framework 'jest')}}
+    "test": "jest",
+    "test:watch": "jest --watch",
+    {{#if tooling.testing.coverage}}
+    "test:coverage": "jest --coverage",
+    {{/if}}
+    {{/if}}
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    {{#each stack.dependencies}}
+    "{{ @key }}": "{{ this }}"{{#unless @last}},{{/unless}}
+    {{/each}}
+  },
+  "devDependencies": {
+    {{#each stack.devDependencies}}
+    "{{ @key }}": "{{ this }}"{{#unless @last}},{{/unless}}
+    {{/each}}
+  },
+  "engines": {
+    "node": "{{ stack.runtime.version }}"
+  }
+}

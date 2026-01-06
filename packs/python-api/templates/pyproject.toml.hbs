@@ -1,0 +1,74 @@
+[tool.poetry]
+name = "{{ project.name }}"
+version = "0.1.0"
+description = "{{ project.description }}"
+{{#if project.author}}
+authors = ["{{ project.author }}"]
+{{/if}}
+{{#if project.license}}
+license = "{{ project.license }}"
+{{/if}}
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "{{ stack.runtime.version }}"
+{{#each stack.dependencies}}
+{{ @key }} = "{{ this }}"
+{{/each}}
+
+[tool.poetry.group.dev.dependencies]
+{{#each stack.devDependencies}}
+{{ @key }} = "{{ this }}"
+{{/each}}
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+{{#if (eq tooling.linter.tool 'ruff')}}
+[tool.ruff]
+line-length = 100
+target-version = "py{{ replace stack.runtime.version '.' '' }}"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W"]
+ignore = []
+
+[tool.ruff.format]
+quote-style = "double"
+{{/if}}
+
+{{#if (eq tooling.typeChecker.tool 'mypy')}}
+[tool.mypy]
+python_version = "{{ stack.runtime.version }}"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+{{/if}}
+
+{{#if (eq tooling.testing.framework 'pytest')}}
+[tool.pytest.ini_options]
+testpaths = ["{{ paths.testDir }}"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+{{#if tooling.testing.coverage}}
+addopts = "--cov={{ paths.sourceDir }} --cov-report=html --cov-report=term"
+
+[tool.coverage.run]
+source = ["{{ paths.sourceDir }}"]
+omit = ["*/tests/*", "*/test_*.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:"
+]
+{{#if tooling.testing.coverageThreshold}}
+fail_under = {{ tooling.testing.coverageThreshold }}
+{{/if}}
+{{/if}}
+{{/if}}

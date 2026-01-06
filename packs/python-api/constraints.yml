@@ -1,0 +1,122 @@
+version: "1.0"
+
+# Feature compatibility rules
+feature_compatibility:
+  # Database + ORM rules
+  - name: "database_requires_orm"
+    condition: "features.database.enabled === true && features.database.type !== 'none'"
+    requires:
+      - field: "features.database.orm"
+        not_equal: "none"
+    error: "Database is enabled but no ORM selected"
+
+  # Async driver requires async ORM
+  - name: "async_driver_requires_async_orm"
+    condition: "features.database.async === true"
+    requires:
+      - field: "features.database.orm"
+        one_of: ["sqlalchemy", "tortoise"]
+    error: "Async database driver requires async-capable ORM (SQLAlchemy or Tortoise)"
+
+  # Migrations require SQLAlchemy
+  - name: "migrations_require_sqlalchemy"
+    condition: "features.database.migrations === true"
+    requires:
+      - field: "features.database.orm"
+        equals: "sqlalchemy"
+    error: "Database migrations require SQLAlchemy (uses Alembic)"
+
+  # Test coverage requires test framework
+  - name: "coverage_requires_tests"
+    condition: "tooling.testing.coverage === true"
+    requires:
+      - field: "tooling.testing.framework"
+        not_equal: "none"
+    error: "Test coverage requires a test framework to be enabled"
+
+  # Docker Compose requires Docker
+  - name: "compose_requires_docker"
+    condition: "infrastructure.docker.compose === true"
+    requires:
+      - field: "infrastructure.docker.enabled"
+        equals: true
+    error: "Docker Compose requires Docker to be enabled"
+
+  # CI checks require CI provider
+  - name: "ci_checks_require_provider"
+    condition: "infrastructure.ci.checks.length > 0"
+    requires:
+      - field: "infrastructure.ci.provider"
+        not_equal: "none"
+    error: "CI checks specified but no CI provider selected"
+
+# Version constraints
+version_constraints:
+  python_pydantic:
+    - python: "3.10"
+      pydantic: ">=1.10,<3.0"
+    - python: "3.11"
+      pydantic: ">=2.0,<3.0"
+    - python: "3.12"
+      pydantic: ">=2.5,<3.0"
+
+  python_fastapi:
+    - python: "3.10"
+      fastapi: ">=0.100,<1.0"
+    - python: "3.11"
+      fastapi: ">=0.100,<1.0"
+    - python: "3.12"
+      fastapi: ">=0.104,<1.0"
+
+# Mutually exclusive options
+exclusions:
+  - name: "single_orm"
+    fields: ["features.database.orm"]
+    max_selections: 1
+    error: "Can only select one ORM"
+
+  - name: "single_package_manager"
+    fields: ["stack.runtime.manager"]
+    max_selections: 1
+    error: "Can only select one package manager"
+
+# Required together
+required_together:
+  - name: "alembic_requires_sqlalchemy"
+    when: "stack.dependencies contains 'alembic'"
+    requires: ["sqlalchemy"]
+    error: "Alembic requires SQLAlchemy to be installed"
+
+# File inclusion rules
+file_inclusion:
+  # Database files
+  - pattern: "templates/src/db/**/*.hbs"
+    condition: "features.database.enabled === true"
+
+  - pattern: "templates/alembic/**/*.hbs"
+    condition: "features.database.migrations === true"
+
+  # Auth files
+  - pattern: "templates/src/auth/**/*.hbs"
+    condition: "features.authentication.enabled === true"
+
+  # Docker files
+  - pattern: "templates/docker/Dockerfile.hbs"
+    condition: "infrastructure.docker.enabled === true"
+
+  - pattern: "templates/docker/docker-compose.yml.hbs"
+    condition: "infrastructure.docker.compose === true"
+
+  # CI files
+  - pattern: "templates/.github/workflows/*.hbs"
+    condition: "infrastructure.ci.provider === 'github-actions'"
+
+  - pattern: "templates/.gitlab-ci.yml.hbs"
+    condition: "infrastructure.ci.provider === 'gitlab-ci'"
+
+  # Config files
+  - pattern: "templates/mypy.ini.hbs"
+    condition: "tooling.typeChecker.tool === 'mypy'"
+
+  - pattern: "templates/pytest.ini.hbs"
+    condition: "tooling.testing.framework === 'pytest'"

@@ -1,0 +1,44 @@
+{
+  "id": "python-api",
+  "version": "1.0.0",
+  "name": "Python API (FastAPI)",
+  "description": "FastAPI-based REST API with modern Python tooling",
+  "author": "Agentgen Team",
+  "license": "MIT",
+
+  "language": "python",
+  "framework": "fastapi",
+
+  "tags": ["api", "rest", "web", "async", "python"],
+
+  "requirements": {
+    "agentgen": ">=0.1.0",
+    "system": {
+      "python": ">=3.10",
+      "poetry": ">=1.5.0"
+    }
+  },
+
+  "supports": {
+    "databases": ["postgresql", "mysql", "sqlite", "none"],
+    "orms": ["sqlalchemy", "tortoise", "none"],
+    "authentication": ["jwt", "oauth2", "api-key", "none"],
+    "testing": ["pytest", "unittest"],
+    "ci": ["github-actions", "gitlab-ci", "circleci", "none"]
+  },
+
+  "features": {
+    "database": {
+      "default": true,
+      "required": false
+    },
+    "docker": {
+      "default": true,
+      "required": false
+    },
+    "ci": {
+      "default": true,
+      "required": false
+    }
+  }
+}
