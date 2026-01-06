@@ -1,0 +1,45 @@
+{
+  "id": "node-api",
+  "version": "1.0.0",
+  "name": "Node API (Express + TypeScript)",
+  "description": "Express-based REST API with TypeScript",
+  "author": "Agentgen Team",
+  "license": "MIT",
+
+  "language": "typescript",
+  "framework": "express",
+
+  "tags": ["api", "rest", "web", "node", "typescript"],
+
+  "requirements": {
+    "agentgen": ">=0.1.0",
+    "system": {
+      "node": ">=18.0.0",
+      "npm": ">=9.0.0"
+    }
+  },
+
+  "supports": {
+    "databases": ["postgresql", "mysql", "mongodb", "sqlite", "none"],
+    "orms": ["prisma", "typeorm", "sequelize", "mongoose", "none"],
+    "packageManagers": ["npm", "pnpm", "yarn"],
+    "authentication": ["jwt", "oauth2", "passport", "none"],
+    "testing": ["vitest", "jest", "none"],
+    "ci": ["github-actions", "gitlab-ci", "circleci", "none"]
+  },
+
+  "features": {
+    "database": {
+      "default": true,
+      "required": false
+    },
+    "docker": {
+      "default": true,
+      "required": false
+    },
+    "ci": {
+      "default": true,
+      "required": false
+    }
+  }
+}

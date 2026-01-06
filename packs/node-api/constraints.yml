@@ -1,0 +1,118 @@
+version: "1.0"
+
+# Feature compatibility rules
+feature_compatibility:
+  # Database + ORM rules
+  - name: "database_requires_orm"
+    condition: "features.database.enabled === true && features.database.type !== 'none'"
+    requires:
+      - field: "features.database.orm"
+        not_equal: "none"
+    error: "Database is enabled but no ORM selected"
+
+  # MongoDB requires compatible ORM
+  - name: "mongodb_requires_compatible_orm"
+    condition: "features.database.type === 'mongodb'"
+    requires:
+      - field: "features.database.orm"
+        one_of: ["mongoose", "typeorm", "prisma"]
+    error: "MongoDB requires Mongoose, TypeORM, or Prisma"
+
+  # Prisma auto-enables migrations
+  - name: "prisma_migrations_built_in"
+    condition: "features.database.orm === 'prisma'"
+    sets:
+      - field: "features.database.migrations"
+        value: true
+    note: "Prisma includes migrations by default"
+
+  # Test coverage requires test framework
+  - name: "coverage_requires_tests"
+    condition: "tooling.testing.coverage === true"
+    requires:
+      - field: "tooling.testing.framework"
+        not_equal: "none"
+    error: "Test coverage requires a test framework to be enabled"
+
+  # Docker Compose requires Docker
+  - name: "compose_requires_docker"
+    condition: "infrastructure.docker.compose === true"
+    requires:
+      - field: "infrastructure.docker.enabled"
+        equals: true
+    error: "Docker Compose requires Docker to be enabled"
+
+  # CI checks require CI provider
+  - name: "ci_checks_require_provider"
+    condition: "infrastructure.ci.checks.length > 0"
+    requires:
+      - field: "infrastructure.ci.provider"
+        not_equal: "none"
+    error: "CI checks specified but no CI provider selected"
+
+# Version constraints
+version_constraints:
+  node_prisma:
+    - node: "18.x"
+      prisma: ">=4.0.0,<6.0.0"
+    - node: "20.x"
+      prisma: ">=5.0.0,<6.0.0"
+
+  node_express:
+    - node: "18.x"
+      express: ">=4.18.0,<5.0.0"
+    - node: "20.x"
+      express: ">=4.18.0,<5.0.0"
+
+# Mutually exclusive options
+exclusions:
+  - name: "single_orm"
+    fields: ["features.database.orm"]
+    max_selections: 1
+    error: "Can only select one ORM"
+
+  - name: "single_package_manager"
+    fields: ["stack.runtime.manager"]
+    max_selections: 1
+    error: "Can only select one package manager (npm, pnpm, or yarn)"
+
+# Required together
+required_together:
+  - name: "mongoose_requires_mongodb"
+    when: "stack.dependencies contains '@types/mongoose'"
+    requires: ["mongoose"]
+    error: "Mongoose types require mongoose to be installed"
+
+# File inclusion rules
+file_inclusion:
+  # Database files
+  - pattern: "templates/src/db/**/*.hbs"
+    condition: "features.database.enabled === true"
+
+  - pattern: "templates/prisma/**/*.hbs"
+    condition: "features.database.orm === 'prisma'"
+
+  # Auth files
+  - pattern: "templates/src/auth/**/*.hbs"
+    condition: "features.authentication.enabled === true"
+
+  # Docker files
+  - pattern: "templates/Dockerfile.hbs"
+    condition: "infrastructure.docker.enabled === true"
+
+  - pattern: "templates/docker-compose.yml.hbs"
+    condition: "infrastructure.docker.compose === true"
+
+  # CI files
+  - pattern: "templates/.github/workflows/*.hbs"
+    condition: "infrastructure.ci.provider === 'github-actions'"
+
+  - pattern: "templates/.gitlab-ci.yml.hbs"
+    condition: "infrastructure.ci.provider === 'gitlab-ci'"
+
+  # Config files
+  - pattern: "templates/vitest.config.ts.hbs"
+    condition: "tooling.testing.framework === 'vitest'"
+
+  - pattern: "templates/jest.config.js.hbs"
+    condition: "tooling.testing.framework === 'jest'"
