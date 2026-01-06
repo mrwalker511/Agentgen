@@ -1,0 +1,81 @@
+{
+  "version": "1.0",
+  "meta": {
+    "packId": "python-api",
+    "packVersion": "1.0.0",
+    "generatedAt": "2025-01-06T11:00:00Z",
+    "agentgenVersion": "0.1.0"
+  },
+  "project": {
+    "name": "hello-api",
+    "description": "Minimal FastAPI example",
+    "author": ""
+  },
+  "stack": {
+    "language": "python",
+    "framework": "fastapi",
+    "runtime": {
+      "version": ">=3.11,<4.0",
+      "manager": "poetry"
+    },
+    "dependencies": {
+      "fastapi": "^0.104.1",
+      "uvicorn": "^0.24.0"
+    },
+    "devDependencies": {
+      "pytest": "^7.4.3"
+    }
+  },
+  "features": {
+    "database": {
+      "enabled": false
+    },
+    "authentication": {
+      "enabled": false
+    },
+    "cors": false,
+    "rateLimiting": false,
+    "openapi": true,
+    "healthCheck": true
+  },
+  "tooling": {
+    "linter": {
+      "tool": "ruff",
+      "configFile": "pyproject.toml"
+    },
+    "formatter": {
+      "tool": "ruff",
+      "configFile": "pyproject.toml"
+    },
+    "typeChecker": {
+      "tool": "none"
+    },
+    "testing": {
+      "framework": "pytest",
+      "coverage": false
+    }
+  },
+  "infrastructure": {
+    "docker": {
+      "enabled": false
+    },
+    "ci": {
+      "provider": "none"
+    },
+    "deployment": {
+      "target": "vps"
+    }
+  },
+  "agent": {
+    "strictness": "balanced",
+    "testRequirements": "on-request",
+    "allowedOperations": [],
+    "prohibitedOperations": [],
+    "customRules": []
+  },
+  "paths": {
+    "outputDir": "./hello-api",
+    "sourceDir": "src",
+    "testDir": "tests"
+  }
+}
