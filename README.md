@@ -194,26 +194,105 @@ Packs are **data, not code** (except the small verifier script), making them eas
 
 ## Development Status
 
-🚧 **Design Phase** - Architecture and schemas defined, implementation not yet started
+🚧 **Early Implementation** - Repository skeleton created, core modules being implemented
 
 **Completed:**
 - ✅ Architecture design
 - ✅ Module breakdown and responsibilities
 - ✅ Blueprint schema definition
 - ✅ Interview flow design
-- ✅ Example blueprints
+- ✅ MVP contract frozen
+- ✅ Repository skeleton created
 
-**Next Steps:**
-- Implement core modules (CLI, interview engine, blueprint builder)
-- Create Python API and Node API template packs
-- Build renderer with managed section support
-- Add dependency verification
-- Write comprehensive tests
+**In Progress:**
+- 🔨 Implement core modules (CLI, interview engine, blueprint builder)
+- 🔨 Create Python API and Node API template packs
+- 🔨 Build renderer with managed section support
+- 🔨 Add dependency verification
+- 🔨 Write comprehensive tests
+
+## Installation (Development)
+
+```bash
+# Clone repository
+git clone https://github.com/mrwalker511/Agentgen.git
+cd Agentgen
+
+# Install dependencies
+npm install
+
+# Build TypeScript
+npm run build
+
+# Run CLI (development)
+npm run cli -- --help
+```
+
+### Prerequisites
+
+- **Node.js** >=18.0.0
+- **npm** >=9.0.0
+- **Poetry** >=1.5.0 (for Python pack verification)
+
+## Development
+
+```bash
+# Watch mode (auto-rebuild on changes)
+npm run dev
+
+# Run tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Generate test coverage
+npm run test:coverage
+
+# Lint code
+npm run lint
+
+# Format code
+npm run format
+
+# Type check
+npm run typecheck
+```
+
+## Project Structure
+
+```
+agentgen/
+├── src/                  # TypeScript source code
+│   ├── cli/              # CLI entry point and commands
+│   ├── interview/        # Question engine
+│   ├── blueprint/        # Blueprint management
+│   ├── packs/            # Pack system
+│   ├── renderer/         # Template rendering
+│   ├── verification/     # Dependency verification
+│   └── core/             # Shared utilities
+├── packs/                # Built-in template packs
+│   ├── python-api/       # FastAPI pack
+│   └── node-api/         # Express pack
+├── tests/                # Test suites
+│   ├── unit/             # Unit tests
+│   ├── integration/      # Integration tests
+│   └── fixtures/         # Test fixtures
+├── docs/                 # Documentation
+│   ├── mvp.md            # MVP contract
+│   └── examples/         # Example blueprints
+└── scripts/              # Build and utility scripts
+```
 
 ## Contributing
 
-This project is in early design phase. Once implementation begins, we'll welcome contributions!
+This project is in early implementation phase. Contributions welcome!
+
+Please see:
+- [ARCHITECTURE.md](./ARCHITECTURE.md) - System design
+- [docs/mvp.md](./docs/mvp.md) - MVP scope and contract
+- [BLUEPRINT-SCHEMA.md](./BLUEPRINT-SCHEMA.md) - Blueprint format
 
 ## License
 
-MIT (or Apache-2.0, TBD)
+MIT
