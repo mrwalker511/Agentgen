@@ -1,0 +1,33 @@
+# Source files (publish only dist/)
+src/
+tests/
+scripts/
+
+# Configuration
+tsconfig.json
+.eslintrc.json
+.prettierrc.json
+vitest.config.ts
+
+# Development files
+*.test.ts
+*.spec.ts
+.vscode/
+.idea/
+
+# Documentation (keep README, LICENSE)
+docs/examples/
+ARCHITECTURE.md
+BLUEPRINT-SCHEMA.md
+TEMPLATE-PACKS.md
+VERIFICATION.md
+AGENT-MD-GENERATION.md
+
+# CI/CD
+.github/
+
+# Misc
+.DS_Store
+*.log
+coverage/
+.env*
