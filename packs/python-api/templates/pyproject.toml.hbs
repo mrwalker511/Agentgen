@@ -11,14 +11,14 @@ license = "{{ project.license }}"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "{{ stack.runtime.version }}"
+python = "{{{ stack.runtime.version }}}"
 {{#each stack.dependencies}}
-{{ @key }} = "{{ this }}"
+{{ @key }} = "{{{ this }}}"
 {{/each}}
 
 [tool.poetry.group.dev.dependencies]
 {{#each stack.devDependencies}}
-{{ @key }} = "{{ this }}"
+{{ @key }} = "{{{ this }}}"
 {{/each}}
 
 [build-system]
@@ -40,7 +40,7 @@ quote-style = "double"
 
 {{#if (eq tooling.typeChecker.tool 'mypy')}}
 [tool.mypy]
-python_version = "{{ stack.runtime.version }}"
+python_version = "{{{ stack.runtime.version }}}"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true

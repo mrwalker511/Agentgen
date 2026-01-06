@@ -4,7 +4,7 @@
 
 import Handlebars from 'handlebars';
 import { Blueprint } from '../core/types.js';
-import { Pack, TemplateFile } from '../packs/types.js';
+import { Pack } from '../packs/types.js';
 import { RenderedFile, TemplateContext } from './types.js';
 import { loadTemplateFiles } from '../packs/loader.js';
 import { TemplateRenderError } from '../core/errors.js';
@@ -80,14 +80,16 @@ function templatePathToOutputPath(templatePath: string, context: TemplateContext
     outputPath = outputPath.slice(0, -4);
   }
 
-  // Replace {{project.name}} placeholders in path
-  // Example: src/{{project.name}}/main.py -> src/hello-api/main.py
-  outputPath = outputPath.replace(/\{\{project\.name\}\}/g, context.project.name);
+  // Replace {{paths.sourceDir}} and {{paths.testDir}}
+  outputPath = outputPath.replace(/\{\{paths\.sourceDir\}\}/g, context.paths.sourceDir);
+  outputPath = outputPath.replace(/\{\{paths\.testDir\}\}/g, context.paths.testDir);
 
-  // Convert project name to snake_case for Python modules
-  // Example: src/hello-api/main.py -> src/hello_api/main.py
+  // Replace {{toSnakeCase project.name}} with snake_case version
   const snakeCaseName = context.project.name.replace(/-/g, '_');
-  outputPath = outputPath.replace(context.project.name, snakeCaseName);
+  outputPath = outputPath.replace(/\{\{toSnakeCase project\.name\}\}/g, snakeCaseName);
+
+  // Replace remaining {{project.name}} placeholders
+  outputPath = outputPath.replace(/\{\{project\.name\}\}/g, context.project.name);
 
   return outputPath;
 }
