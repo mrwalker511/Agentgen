@@ -1,0 +1,134 @@
+{
+  "version": "1.0",
+  "meta": {
+    "packId": "node-api",
+    "packVersion": "1.0.0",
+    "generatedAt": "2025-01-06T10:45:00Z",
+    "agentgenVersion": "0.1.0"
+  },
+  "project": {
+    "name": "user-service",
+    "description": "User management microservice with Express",
+    "author": "John Smith",
+    "license": "Apache-2.0",
+    "repository": "https://github.com/example/user-service"
+  },
+  "stack": {
+    "language": "typescript",
+    "framework": "express",
+    "runtime": {
+      "version": ">=20.0.0",
+      "manager": "pnpm"
+    },
+    "dependencies": {
+      "express": "^4.18.2",
+      "cors": "^2.8.5",
+      "helmet": "^7.1.0",
+      "express-rate-limit": "^7.1.5",
+      "prisma": "^5.7.1",
+      "@prisma/client": "^5.7.1",
+      "bcryptjs": "^2.4.3",
+      "jsonwebtoken": "^9.0.2",
+      "zod": "^3.22.4",
+      "winston": "^3.11.0"
+    },
+    "devDependencies": {
+      "typescript": "^5.3.3",
+      "@types/node": "^20.10.5",
+      "@types/express": "^4.17.21",
+      "@types/bcryptjs": "^2.4.6",
+      "@types/jsonwebtoken": "^9.0.5",
+      "tsx": "^4.7.0",
+      "vitest": "^1.0.4",
+      "@vitest/coverage-v8": "^1.0.4",
+      "supertest": "^6.3.3",
+      "@types/supertest": "^6.0.2",
+      "eslint": "^8.56.0",
+      "@typescript-eslint/eslint-plugin": "^6.15.0",
+      "@typescript-eslint/parser": "^6.15.0",
+      "prettier": "^3.1.1"
+    }
+  },
+  "features": {
+    "database": {
+      "enabled": true,
+      "type": "postgresql",
+      "orm": "prisma",
+      "migrations": true,
+      "async": true
+    },
+    "authentication": {
+      "enabled": true,
+      "method": "jwt"
+    },
+    "cors": true,
+    "rateLimiting": true,
+    "openapi": true,
+    "healthCheck": true
+  },
+  "tooling": {
+    "linter": {
+      "tool": "eslint",
+      "configFile": ".eslintrc.json"
+    },
+    "formatter": {
+      "tool": "prettier",
+      "configFile": ".prettierrc"
+    },
+    "typeChecker": {
+      "tool": "tsc",
+      "configFile": "tsconfig.json"
+    },
+    "testing": {
+      "framework": "vitest",
+      "coverage": true,
+      "coverageThreshold": 85
+    }
+  },
+  "infrastructure": {
+    "docker": {
+      "enabled": true,
+      "compose": true,
+      "registry": "ghcr.io"
+    },
+    "ci": {
+      "provider": "github-actions",
+      "checks": ["lint", "type-check", "test", "security-scan"]
+    },
+    "deployment": {
+      "target": "docker"
+    }
+  },
+  "agent": {
+    "strictness": "strict",
+    "testRequirements": "always",
+    "allowedOperations": [
+      "add-endpoint",
+      "add-model",
+      "add-test",
+      "add-validation",
+      "update-dependencies-minor"
+    ],
+    "prohibitedOperations": [
+      "modify-auth-middleware",
+      "change-database-schema-directly",
+      "disable-security-headers",
+      "update-dependencies-major",
+      "modify-ci-workflow"
+    ],
+    "customRules": [
+      "All endpoints must have Zod validation schemas",
+      "All database queries must use Prisma ORM",
+      "Never expose internal errors to API responses",
+      "Use Winston for all logging, never console.log",
+      "Follow RESTful conventions strictly",
+      "All routes must have integration tests",
+      "Never store passwords in plain text"
+    ]
+  },
+  "paths": {
+    "outputDir": "./user-service",
+    "sourceDir": "src",
+    "testDir": "tests"
+  }
+}
