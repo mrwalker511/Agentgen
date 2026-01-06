@@ -1,0 +1,668 @@
+# AI Agent Guidelines for {{ project.name }}
+
+<!-- agentgen:managed:start:metadata -->
+**Generated:** {{ meta.generatedAt }}
+**Pack:** {{ meta.packId }}@{{ meta.packVersion }}
+**Agentgen:** {{ meta.agentgenVersion }}
+**Blueprint Hash:** {{ blueprintHash }}
+<!-- agentgen:managed:end:metadata -->
+
+## Project Overview
+
+{{ project.description }}
+
+<!-- agentgen:managed:start:stack -->
+## Technical Stack
+
+- **Language:** {{ capitalize stack.language }} {{ extractMajorMinor stack.runtime.version }}
+- **Framework:** {{ capitalize stack.framework }}
+- **Package Manager:** {{ capitalize stack.runtime.manager }}
+- **Runtime Version:** {{ stack.runtime.version }}
+<!-- agentgen:managed:end:stack -->
+
+<!-- agentgen:managed:start:dependencies -->
+## Dependencies
+
+### Production Dependencies
+{{#each stack.dependencies}}
+- `{{ @key }}` {{ this }}
+{{/each}}
+
+{{#if stack.devDependencies}}
+### Development Dependencies
+{{#each stack.devDependencies}}
+- `{{ @key }}` {{ this }}
+{{/each}}
+{{/if}}
+
+**Total:** {{ add (objectLength stack.dependencies) (objectLength stack.devDependencies) }} packages
+<!-- agentgen:managed:end:dependencies -->
+
+<!-- agentgen:managed:start:features -->
+## Enabled Features
+
+{{#if features.database.enabled}}
+### Database
+- **Type:** {{ capitalize features.database.type }}
+- **ORM:** {{ capitalize features.database.orm }}
+{{#if features.database.async}}
+- **Driver:** Async ({{ getAsyncDriver features.database.type features.database.orm }})
+{{/if}}
+{{#if features.database.migrations}}
+- **Migrations:** {{ getMigrationTool features.database.orm }}
+{{/if}}
+{{/if}}
+
+{{#if features.authentication.enabled}}
+### Authentication
+- **Method:** {{ uppercase features.authentication.method }}
+{{#if (eq features.authentication.method 'jwt')}}
+- **Library:** python-jose / passlib
+{{/if}}
+{{/if}}
+
+{{#if features.cors}}
+### CORS
+- **Status:** Enabled
+- **Configuration:** See `src/config.py`
+{{/if}}
+
+{{#if features.rateLimiting}}
+### Rate Limiting
+- **Status:** Enabled
+{{/if}}
+
+{{#if features.openapi}}
+### OpenAPI Documentation
+- **Available at:** `/docs`
+- **ReDoc:** `/redoc`
+{{/if}}
+
+{{#if features.healthCheck}}
+### Health Check
+- **Endpoint:** `/health`
+- **Returns:** Service status and version
+{{/if}}
+<!-- agentgen:managed:end:features -->
+
+<!-- agentgen:managed:start:tooling -->
+## Development Tooling
+
+### Code Quality
+- **Linter:** {{ capitalize tooling.linter.tool }}
+  - Config: `{{ tooling.linter.configFile }}`
+{{#if tooling.formatter}}
+- **Formatter:** {{ capitalize tooling.formatter.tool }}
+  - Config: `{{ tooling.formatter.configFile }}`
+{{/if}}
+{{#if tooling.typeChecker.tool}}
+{{#unless (eq tooling.typeChecker.tool 'none')}}
+- **Type Checker:** {{ tooling.typeChecker.tool }}
+  - Config: `{{ tooling.typeChecker.configFile }}`
+{{/unless}}
+{{/if}}
+
+### Testing
+- **Framework:** {{ tooling.testing.framework }}
+{{#if tooling.testing.coverage}}
+- **Coverage:** Required (minimum {{ tooling.testing.coverageThreshold }}%)
+- **Report:** HTML report in `htmlcov/`
+{{/if}}
+
+### Tool Commands
+```bash
+# Linting
+{{ getToolCommand tooling.linter.tool 'lint' paths.sourceDir }}
+
+# Formatting
+{{ getToolCommand tooling.formatter.tool 'format' paths.sourceDir }}
+
+{{#if (ne tooling.typeChecker.tool 'none')}}
+# Type checking
+{{ getToolCommand tooling.typeChecker.tool 'check' paths.sourceDir }}
+{{/if}}
+
+# Testing
+{{ getToolCommand tooling.testing.framework 'test' }}
+
+{{#if tooling.testing.coverage}}
+# Coverage report
+{{ getToolCommand tooling.testing.framework 'coverage' }}
+{{/if}}
+```
+<!-- agentgen:managed:end:tooling -->
+
+<!-- agentgen:managed:start:verification -->
+## Dependency Verification
+
+### How to Verify Dependencies
+
+{{#if (eq stack.language 'python')}}
+```bash
+# Install Poetry (if needed)
+curl -sSL https://install.python-poetry.org | python3 -
+
+# Verify dependencies resolve correctly
+cd {{ project.name }}
+poetry lock --no-update --check
+
+# Alternative: use agentgen
+agentgen verify blueprint.json
+```
+{{else if (eq stack.language 'typescript')}}
+```bash
+# Verify dependencies resolve correctly
+cd {{ project.name }}
+{{ stack.runtime.manager }} install --dry-run
+
+# Alternative: use agentgen
+agentgen verify blueprint.json
+```
+{{/if}}
+
+### What Gets Verified
+- {{ capitalize stack.language }} runtime version: `{{ stack.runtime.version }}`
+- Production dependencies ({{ objectLength stack.dependencies }} packages)
+{{#if stack.devDependencies}}
+- Development dependencies ({{ objectLength stack.devDependencies }} packages)
+{{/if}}
+- Version constraint compatibility
+- Platform requirements
+
+### Expected Outcome
+✅ All dependencies should resolve without conflicts
+
+### If Verification Fails
+1. Review the error message for conflicting packages
+2. Check version constraints in {{ getManifestFilename stack.language stack.runtime.manager }}
+3. Update incompatible package versions
+4. Re-run verification
+5. Update blueprint if needed
+
+{{#if verificationReport}}
+### Last Verification
+- **Date:** {{ verificationReport.timestamp }}
+- **Status:** {{ verificationReport.status }}
+- **Tool:** {{ verificationReport.tool }} {{ verificationReport.toolVersion }}
+{{/if}}
+<!-- agentgen:managed:end:verification -->
+
+<!-- agentgen:managed:start:development -->
+## Development Workflow
+
+### Initial Setup
+
+```bash
+# Clone repository
+git clone {{ project.repository }}
+cd {{ project.name }}
+
+{{#if (eq stack.language 'python')}}
+# Install dependencies
+{{ stack.runtime.manager }} install
+
+{{#if features.database.enabled}}
+# Set up environment
+cp .env.example .env
+# Edit .env with your database credentials
+
+{{#if infrastructure.docker.compose}}
+# Start database with Docker
+docker-compose up -d {{ getDockerServiceName features.database.type }}
+{{/if}}
+
+{{#if features.database.migrations}}
+# Run database migrations
+{{ stack.runtime.manager }} run alembic upgrade head
+{{/if}}
+{{/if}}
+
+{{else if (eq stack.language 'typescript')}}
+# Install dependencies
+{{ stack.runtime.manager }} install
+
+{{#if features.database.enabled}}
+# Set up environment
+cp .env.example .env
+# Edit .env with your database credentials
+
+{{#if infrastructure.docker.compose}}
+# Start database with Docker
+docker-compose up -d {{ getDockerServiceName features.database.type }}
+{{/if}}
+
+{{#if features.database.migrations}}
+# Generate Prisma client and run migrations
+{{ stack.runtime.manager }} run prisma generate
+{{ stack.runtime.manager }} run prisma migrate dev
+{{/if}}
+{{/if}}
+{{/if}}
+```
+
+### Running Locally
+
+```bash
+{{#if (eq stack.language 'python')}}
+# Start development server (auto-reload enabled)
+{{ stack.runtime.manager }} run uvicorn {{ paths.sourceDir }}.main:app --reload --port {{ getDefaultPort stack.framework }}
+
+# Alternative: using Python module
+{{ stack.runtime.manager }} run python -m uvicorn {{ paths.sourceDir }}.main:app --reload
+{{else if (eq stack.language 'typescript')}}
+# Start development server
+{{ stack.runtime.manager }} run dev
+
+# Alternative
+{{ stack.runtime.manager }} run start:dev
+{{/if}}
+```
+
+**Access points:**
+- API: `http://localhost:{{ getDefaultPort stack.framework }}`
+{{#if features.openapi}}
+- Docs: `http://localhost:{{ getDefaultPort stack.framework }}/docs`
+{{/if}}
+{{#if features.healthCheck}}
+- Health: `http://localhost:{{ getDefaultPort stack.framework }}/health`
+{{/if}}
+
+### Common Commands
+
+```bash
+{{#if (eq stack.language 'python')}}
+# Add dependency
+{{ stack.runtime.manager }} add <package-name>
+
+# Add dev dependency
+{{ stack.runtime.manager }} add --group dev <package-name>
+
+# Update all dependencies
+{{ stack.runtime.manager }} update
+
+# Show dependency tree
+{{ stack.runtime.manager }} show --tree
+
+# Enter virtual environment
+{{ stack.runtime.manager }} shell
+{{else}}
+# Add dependency
+{{ stack.runtime.manager }} add <package-name>
+
+# Add dev dependency
+{{ stack.runtime.manager }} add -D <package-name>
+
+# Update all dependencies
+{{ stack.runtime.manager }} update
+
+# List dependencies
+{{ stack.runtime.manager }} list
+{{/if}}
+```
+<!-- agentgen:managed:end:development -->
+
+<!-- agentgen:managed:start:testing -->
+## Testing
+
+### Test Structure
+
+```
+{{ paths.testDir }}/
+{{#if (eq stack.language 'python')}}
+├── __init__.py
+├── conftest.py              # Shared pytest fixtures
+├── test_main.py             # Application-level tests
+└── test_api/
+    ├── test_routes.py       # API endpoint tests
+{{#if features.database.enabled}}
+    └── test_models.py       # Database model tests
+{{/if}}
+{{else}}
+├── setup.ts                 # Test setup
+├── integration/
+│   └── api.test.ts          # Integration tests
+└── unit/
+    └── services.test.ts     # Unit tests
+{{/if}}
+```
+
+### Running Tests
+
+```bash
+{{#if (eq tooling.testing.framework 'pytest')}}
+# Run all tests
+{{ stack.runtime.manager }} run pytest
+
+# Run with coverage
+{{ stack.runtime.manager }} run pytest --cov={{ paths.sourceDir }} --cov-report=html --cov-report=term
+
+# Run specific test file
+{{ stack.runtime.manager }} run pytest {{ paths.testDir }}/test_main.py
+
+# Run tests matching pattern
+{{ stack.runtime.manager }} run pytest -k "test_health"
+
+# Verbose output
+{{ stack.runtime.manager }} run pytest -v
+
+# Stop on first failure
+{{ stack.runtime.manager }} run pytest -x
+{{else if (eq tooling.testing.framework 'vitest')}}
+# Run all tests
+{{ stack.runtime.manager }} run test
+
+# Run with coverage
+{{ stack.runtime.manager }} run test:coverage
+
+# Watch mode
+{{ stack.runtime.manager }} run test:watch
+
+# UI mode
+{{ stack.runtime.manager }} run test:ui
+{{else if (eq tooling.testing.framework 'jest')}}
+# Run all tests
+{{ stack.runtime.manager }} test
+
+# Run with coverage
+{{ stack.runtime.manager }} run test:coverage
+
+# Watch mode
+{{ stack.runtime.manager }} run test:watch
+
+# Update snapshots
+{{ stack.runtime.manager }} test -- -u
+{{/if}}
+```
+
+{{#if tooling.testing.coverage}}
+### Coverage Requirements
+
+**Minimum coverage:** {{ tooling.testing.coverageThreshold }}%
+
+Coverage reports are generated in `htmlcov/` directory.
+View the report by opening `htmlcov/index.html` in a browser.
+{{/if}}
+
+{{#if (eq agent.testRequirements 'always')}}
+### Testing Policy
+
+Tests are **REQUIRED** for:
+- ✅ All new API endpoints
+- ✅ Database models and queries
+- ✅ Authentication and authorization logic
+- ✅ Business logic functions
+- ✅ Data validation and transformations
+
+Tests are **RECOMMENDED** for:
+- Edge cases and error scenarios
+- Integration between modules
+- External API interactions (with mocks)
+{{else if (eq agent.testRequirements 'on-request')}}
+### Testing Policy
+
+Tests should be written when:
+- Explicitly requested during code review
+- Adding critical authentication/authorization features
+- Implementing complex business logic
+- Working with database operations
+{{/if}}
+
+{{#if infrastructure.ci}}
+{{#if (arrayIncludes infrastructure.ci.checks 'test')}}
+### Continuous Integration
+
+Tests run automatically on:
+- Every pull request
+- Pushes to main branch
+- Manual workflow triggers
+
+**CI pipeline checks:**
+{{#each infrastructure.ci.checks}}
+- {{ capitalize this }}
+{{/each}}
+
+{{#if tooling.testing.coverage}}
+**Coverage threshold enforced:** {{ tooling.testing.coverageThreshold }}%
+{{/if}}
+{{/if}}
+{{/if}}
+<!-- agentgen:managed:end:testing -->
+
+<!-- agentgen:managed:start:infrastructure -->
+## Infrastructure
+
+{{#if infrastructure.docker.enabled}}
+### Docker
+
+**Dockerfile:** `Dockerfile`
+{{#if infrastructure.docker.compose}}
+**Compose file:** `docker-compose.yml`
+{{/if}}
+
+```bash
+# Build image
+docker build -t {{ project.name }}:latest .
+
+# Run container
+docker run -p {{ getDefaultPort stack.framework }}:{{ getDefaultPort stack.framework }} --env-file .env {{ project.name }}:latest
+
+{{#if infrastructure.docker.compose}}
+# Using docker-compose
+docker-compose up
+
+# Build and run in background
+docker-compose up -d --build
+
+# View logs
+docker-compose logs -f {{ getDockerServiceName 'api' }}
+
+# Stop all services
+docker-compose down
+{{/if}}
+```
+
+{{#if infrastructure.docker.registry}}
+**Registry:** {{ infrastructure.docker.registry }}
+{{/if}}
+{{/if}}
+
+{{#if infrastructure.ci}}
+{{#unless (eq infrastructure.ci.provider 'none')}}
+### CI/CD
+
+**Provider:** {{ capitalize infrastructure.ci.provider }}
+{{#if (eq infrastructure.ci.provider 'github-actions')}}
+**Workflow:** `.github/workflows/ci.yml`
+{{else if (eq infrastructure.ci.provider 'gitlab-ci')}}
+**Config:** `.gitlab-ci.yml`
+{{else if (eq infrastructure.ci.provider 'circleci')}}
+**Config:** `.circleci/config.yml`
+{{/if}}
+
+**Automated checks:**
+{{#each infrastructure.ci.checks}}
+- {{ capitalize this }}
+{{/each}}
+
+**Triggers:**
+- Push to main branch
+- Pull request opened/updated
+- Manual workflow dispatch
+{{/unless}}
+{{/if}}
+
+{{#if infrastructure.deployment}}
+### Deployment
+
+**Target platform:** {{ capitalize infrastructure.deployment.target }}
+
+{{#if (eq infrastructure.deployment.target 'kubernetes')}}
+**Deployment strategy:**
+1. CI/CD builds Docker image
+2. Image pushed to container registry
+3. Kubernetes deployment updated
+4. Rolling update applied
+5. Health checks verify deployment success
+
+**Required secrets:**
+- Database credentials
+- API keys
+- TLS certificates
+{{else if (eq infrastructure.deployment.target 'docker')}}
+**Deployment strategy:**
+1. Build Docker image
+2. Push to registry
+3. Pull image on target server
+4. Restart container with new image
+{{else if (eq infrastructure.deployment.target 'serverless')}}
+**Deployment strategy:**
+1. Package application
+2. Deploy to serverless platform
+3. Update function configuration
+4. Test deployment
+{{/if}}
+
+**Environment variables required:**
+{{#if features.database.enabled}}
+- `DATABASE_URL` - Database connection string
+{{/if}}
+- `SECRET_KEY` - Application secret key
+{{#if features.cors}}
+- `CORS_ORIGINS` - Allowed CORS origins
+{{/if}}
+{{#if features.authentication.enabled}}
+- `JWT_SECRET` - JWT signing key
+{{/if}}
+{{/if}}
+<!-- agentgen:managed:end:infrastructure -->
+
+<!-- agentgen:managed:start:agent-rules -->
+## AI Agent Behavioral Rules
+
+### Strictness Level: {{ titleCase agent.strictness }}
+
+{{#if (eq agent.strictness 'strict')}}
+The AI agent must **ask for approval** before making any significant changes. It should be conservative and explicit about all proposed modifications.
+
+**Expected behavior:**
+- Always explain proposed changes before implementing
+- Request confirmation for architectural decisions
+- Flag potential breaking changes
+- Prefer incremental modifications
+- Document all assumptions
+{{else if (eq agent.strictness 'balanced')}}
+The AI agent has **moderate autonomy**. It can make reasonable technical decisions but should ask before major architectural changes or potentially breaking modifications.
+
+**Expected behavior:**
+- Make routine changes autonomously (bug fixes, refactoring)
+- Ask permission for architectural decisions
+- Explain reasoning for non-trivial changes
+- Flag risks in proposed modifications
+- Document significant decisions
+{{else}}
+The AI agent has **broad autonomy**. It can make technical decisions independently, though it should still communicate changes clearly.
+
+**Expected behavior:**
+- Implement solutions autonomously
+- Explain changes after implementation
+- Flag major architectural shifts
+- Document decisions and reasoning
+- Ask when uncertain about requirements
+{{/if}}
+
+### Test Requirements: {{ titleCase agent.testRequirements }}
+
+{{#if (eq agent.testRequirements 'always')}}
+When adding new features or modifying existing code, the agent **MUST** write corresponding tests. Code without tests should not be considered complete.
+
+**Testing expectations:**
+- Every new function has unit tests
+- Every new endpoint has integration tests
+- Edge cases are covered
+- Error scenarios are tested
+- Coverage meets {{ tooling.testing.coverageThreshold }}% threshold
+{{else if (eq agent.testRequirements 'on-request')}}
+The agent should write tests when:
+- Explicitly requested during code review
+- Making changes to critical authentication or authorization logic
+- Implementing database operations
+- Adding complex business logic
+- Modifying core functionality
+
+**Testing guidelines:**
+- Prioritize tests for critical paths
+- Mock external dependencies
+- Test error scenarios
+- Aim for meaningful coverage, not just metrics
+{{else}}
+Tests are **optional**. The agent may write tests at its discretion, prioritizing:
+- Critical business logic
+- Complex algorithms
+- Error-prone areas
+- Public APIs
+{{/if}}
+
+### Allowed Operations
+
+The agent **MAY** perform these operations autonomously:
+{{#each agent.allowedOperations}}
+- ✅ {{ this }}
+{{/each}}
+
+### Prohibited Operations
+
+The agent **MUST NOT** perform these operations without explicit approval:
+{{#each agent.prohibitedOperations}}
+- ❌ {{ this }}
+{{/each}}
+
+{{#if agent.customRules}}
+### Custom Project Rules
+
+{{#each agent.customRules}}
+{{ add @index 1 }}. {{ this }}
+{{/each}}
+{{/if}}
+
+### Communication Guidelines
+
+When working on this project, the agent should:
+- **Be explicit** about changes being made and why
+- **Ask questions** when requirements are ambiguous
+- **Explain trade-offs** when suggesting alternatives
+- **Flag risks** in proposed changes or existing code
+- **Respect conventions** established in the codebase
+- **Document decisions** that affect future development
+
+### Error Handling
+
+When encountering errors or blockers:
+1. **Analyze the root cause** before suggesting fixes
+2. **Propose solutions** with clear reasoning
+3. **Consider side effects** of proposed changes
+4. **Test thoroughly** before marking as complete
+5. **Document workarounds** if applicable
+<!-- agentgen:managed:end:agent-rules -->
+
+---
+
+## Custom Project Documentation
+
+<!-- Everything below this line will be preserved across regenerations -->
+<!-- Add your project-specific notes, architecture decisions, and guidelines here -->
+
+### Architecture Notes
+
+(Document your architecture decisions, design patterns, and technical approaches here)
+
+### Known Issues
+
+(List any known bugs, limitations, or areas for improvement)
+
+### Development Workflow
+
+(Describe your team's git workflow, branching strategy, code review process, etc.)
+
+### Additional Agent Guidelines
+
+(Add any project-specific instructions for AI agents that aren't covered in managed sections)
