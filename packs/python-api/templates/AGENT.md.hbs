@@ -1,0 +1,158 @@
+# AI Agent Guidelines for {{project.name}}
+
+**Generated:** {{meta.generatedAt}}
+**Pack:** {{meta.packId}}@{{meta.packVersion}}
+**Agentgen:** {{meta.agentgenVersion}}
+
+## Project Overview
+
+{{project.description}}
+
+**Stack:** {{stack.framework}} ({{stack.language}} {{stack.runtime.version}})
+
+## Dependencies
+
+### Production
+{{#each stack.dependencies}}
+- `{{@key}}` {{this}}
+{{/each}}
+
+### Development
+{{#each stack.devDependencies}}
+- `{{@key}}` {{this}}
+{{/each}}
+
+## Enabled Features
+
+{{#if features.openapi}}
+- **OpenAPI Docs:** Available at `/docs` and `/redoc`
+{{/if}}
+{{#if features.healthCheck}}
+- **Health Check:** Available at `/health`
+{{/if}}
+
+## Development Tooling
+
+### Code Quality
+- **Linter:** {{tooling.linter.tool}}
+- **Formatter:** {{tooling.formatter.tool}}
+- **Type Checker:** {{tooling.typeChecker.tool}}
+
+### Testing
+- **Framework:** {{tooling.testing.framework}}
+{{#if tooling.testing.coverage}}
+- **Coverage:** Enabled (threshold: {{tooling.testing.coverageThreshold}}%)
+{{/if}}
+
+### Commands
+
+```bash
+# Lint code
+ruff check {{paths.sourceDir}}
+
+# Format code
+ruff format {{paths.sourceDir}}
+
+# Type check
+mypy {{paths.sourceDir}}
+
+# Run tests
+pytest
+
+# Run with coverage
+pytest --cov={{paths.sourceDir}}
+```
+
+## Development Workflow
+
+### Initial Setup
+
+```bash
+# Install dependencies
+poetry install
+
+# Run development server
+poetry run uvicorn {{toSnakeCase project.name}}.main:app --reload
+```
+
+**Server will be available at:** `http://localhost:8000`
+**API documentation:** `http://localhost:8000/docs`
+{{#if features.healthCheck}}
+**Health check:** `http://localhost:8000/health`
+{{/if}}
+
+### Common Commands
+
+```bash
+# Add dependency
+poetry add <package-name>
+
+# Add dev dependency
+poetry add --group dev <package-name>
+
+# Update dependencies
+poetry update
+
+# Show dependency tree
+poetry show --tree
+```
+
+## AI Agent Rules
+
+### Strictness Level: {{capitalize agent.strictness}}
+
+{{#if (eq agent.strictness 'strict')}}
+The AI agent must ask for approval before making any significant changes.
+{{else if (eq agent.strictness 'balanced')}}
+The AI agent has moderate autonomy. It can make reasonable technical decisions but should ask before major architectural changes.
+{{else}}
+The AI agent has broad autonomy.
+{{/if}}
+
+### Test Requirements: {{capitalize agent.testRequirements}}
+
+{{#if (eq agent.testRequirements 'always')}}
+When adding new features or endpoints, the agent **MUST** write corresponding tests.
+{{else if (eq agent.testRequirements 'on-request')}}
+The agent should write tests when explicitly requested or when making critical changes.
+{{else}}
+Tests are optional.
+{{/if}}
+
+### Allowed Operations
+
+{{#each agent.allowedOperations}}
+- {{this}}
+{{/each}}
+
+### Prohibited Operations
+
+{{#each agent.prohibitedOperations}}
+- {{this}}
+{{/each}}
+
+{{#if agent.customRules}}
+### Custom Rules
+
+{{#each agent.customRules}}
+{{add @index 1}}. {{this}}
+{{/each}}
+{{/if}}
+
+---
+
+## Custom Project Notes
+
+Add project-specific guidance below. This section is preserved across regenerations.
+
+### Architecture Notes
+
+(Document your architecture decisions here)
+
+### Known Issues
+
+(Document any known issues or workarounds)
+
+### Development Workflow
+
+(Describe your team's development workflow, branching strategy, etc.)

@@ -1,0 +1,55 @@
+# {{project.name}}
+
+{{project.description}}
+
+## Setup
+
+```bash
+# Install dependencies
+poetry install
+
+# Run development server
+poetry run uvicorn {{toSnakeCase project.name}}.main:app --reload
+```
+
+## API Documentation
+
+When the server is running, visit:
+- OpenAPI docs: http://localhost:8000/docs
+- ReDoc: http://localhost:8000/redoc
+
+## Testing
+
+```bash
+# Run tests
+poetry run pytest
+
+# Run with coverage
+poetry run pytest --cov={{toSnakeCase project.name}}
+```
+
+## Project Structure
+
+```
+{{project.name}}/
+├── {{paths.sourceDir}}/        # Application source code
+│   └── {{toSnakeCase project.name}}/
+│       └── main.py
+├── {{paths.testDir}}/          # Tests
+│   └── test_smoke.py
+├── pyproject.toml  # Dependencies and project configuration
+├── AGENT.md        # AI agent guidelines
+└── README.md       # This file
+```
+
+## Development
+
+This project uses:
+- **{{stack.framework}}** - Web framework
+- **{{tooling.linter.tool}}** - Linting
+- **{{tooling.formatter.tool}}** - Code formatting
+- **{{tooling.testing.framework}}** - Testing
+
+## License
+
+{{project.license}}
