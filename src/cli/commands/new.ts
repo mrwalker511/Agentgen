@@ -4,16 +4,17 @@
 
 import * as path from 'path';
 import { loadPack } from '../../packs/loader.js';
-import { buildBlueprint } from '../../blueprint/builder.js';
+import { buildBlueprint, buildBlueprintFromAnswers } from '../../blueprint/builder.js';
 import { renderPack } from '../../renderer/engine.js';
 import { writeFiles, writeFile } from '../../renderer/writer.js';
 import { resolvePath } from '../../core/fs.js';
 import { logger } from '../../core/logger.js';
+import { runInterview } from '../../interview/engine.js';
 import * as output from '../output.js';
 
 export interface NewCommandOptions {
   pack: string;
-  name: string;
+  name?: string;
   nonInteractive: boolean;
   description?: string;
   author?: string;
@@ -38,15 +39,37 @@ export async function executeNewCommand(
     const pack = await loadPack(options.pack);
     loadingSpinner.succeed(`Loaded pack '${pack.metadata.name}' v${pack.metadata.version}`);
 
-    // Build blueprint
-    output.info('Building project blueprint...');
-    const blueprint = buildBlueprint(pack, {
-      projectName: options.name,
-      outputDir,
-      description: options.description,
-      author: options.author,
-    });
-    output.success('Blueprint created');
+    // Build blueprint - either from interview or from CLI flags
+    let blueprint;
+
+    if (options.nonInteractive) {
+      // Non-interactive mode: use CLI flags
+      if (!options.name) {
+        output.error('--name is required in non-interactive mode');
+        process.exit(1);
+      }
+
+      output.info('Building project blueprint...');
+      blueprint = buildBlueprint(pack, {
+        projectName: options.name,
+        outputDir,
+        description: options.description,
+        author: options.author,
+      });
+      output.success('Blueprint created');
+    } else {
+      // Interactive mode: run interview
+      output.blank();
+      output.info('Starting interactive interview...');
+      output.blank();
+
+      const answers = await runInterview(pack);
+
+      output.blank();
+      output.info('Building project blueprint...');
+      blueprint = buildBlueprintFromAnswers(pack, answers, outputDir);
+      output.success('Blueprint created');
+    }
 
     // Write blueprint JSON
     const blueprintFile = {
