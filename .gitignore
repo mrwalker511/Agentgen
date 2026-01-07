@@ -41,3 +41,5 @@ coverage/
 # Generated files
 *.d.ts.map
 test-output/
+tests/tmp/
+tests/tmp-*/
