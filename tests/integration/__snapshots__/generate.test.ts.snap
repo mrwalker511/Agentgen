@@ -1,0 +1,336 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Project Generation Integration > Snapshot tests > should generate consistent AGENT.md structure 1`] = `
+"# AI Agent Guidelines for agent-snapshot
+
+**Generated:** 2026-01-07T12:00:00.000Z
+**Pack:** python-api@1.0.0
+**Agentgen:** 0.1.0
+
+## Project Overview
+
+AGENT snapshot test
+
+**Stack:** fastapi (python &gt;&#x3D;3.11,&lt;4.0)
+
+<!-- agentgen:managed:start:quickstart -->
+## Quickstart
+
+\`\`\`bash
+# Install dependencies
+poetry install
+
+# Run development server
+poetry run uvicorn agent_snapshot.main:app --reload
+\`\`\`
+
+**Server will be available at:** \`http://localhost:8000\`
+
+**API documentation:**
+- OpenAPI (Swagger): \`http://localhost:8000/docs\`
+- ReDoc: \`http://localhost:8000/redoc\`
+
+**Health check:** \`http://localhost:8000/health\`
+<!-- agentgen:managed:end:quickstart -->
+
+<!-- agentgen:managed:start:verification -->
+## Dependency Verification
+
+Run dependency verification to ensure all packages are compatible:
+
+\`\`\`bash
+# Verify dependencies
+agentgen verify-deps .
+\`\`\`
+
+This will:
+1. Lock dependencies with Poetry
+2. Install all packages
+3. Run \`pip check\` to verify compatibility
+4. Run the test suite
+
+Results are saved to \`agentgen.verify.json\`.
+<!-- agentgen:managed:end:verification -->
+
+<!-- agentgen:managed:start:structure -->
+## Repository Structure
+
+\`\`\`
+agent-snapshot/
+├── src/
+│   └── agent_snapshot/
+│       ├── __init__.py
+│       └── main.py              # FastAPI application
+├── tests/
+│   ├── __init__.py
+│   ├── conftest.py
+│   └── test_smoke.py
+├── pyproject.toml              # Dependencies and config
+├── poetry.lock                 # Locked dependencies
+├── README.md
+├── AGENT.md                    # This file
+└── .gitignore
+\`\`\`
+<!-- agentgen:managed:end:structure -->
+
+## Dependencies
+
+### Production
+- \`fastapi\` ^0.104.1
+- \`uvicorn\` ^0.24.0
+- \`pydantic\` ^2.5.0
+
+### Development
+- \`pytest\` ^7.4.3
+- \`httpx\` ^0.25.2
+- \`ruff\` ^0.1.8
+
+## Enabled Features
+
+- **OpenAPI Docs:** Available at \`/docs\` and \`/redoc\`
+- **Health Check:** Available at \`/health\`
+
+## Development Tooling
+
+### Code Quality
+- **Linter:** ruff
+- **Formatter:** ruff
+- **Type Checker:** mypy
+
+### Testing
+- **Framework:** pytest
+
+### Commands
+
+\`\`\`bash
+# Lint code
+ruff check src
+
+# Format code
+ruff format src
+
+# Type check
+mypy src
+
+# Run tests
+pytest
+
+# Run with coverage
+pytest --cov=src
+\`\`\`
+
+## Common Tasks
+
+### Dependency Management
+
+\`\`\`bash
+# Add dependency
+poetry add <package-name>
+
+# Add dev dependency
+poetry add --group dev <package-name>
+
+# Update dependencies
+poetry update
+
+# Show dependency tree
+poetry show --tree
+\`\`\`
+
+## AI Agent Rules
+
+### Strictness Level: Balanced
+
+The AI agent has moderate autonomy. It can make reasonable technical decisions but should ask before major architectural changes.
+
+### Test Requirements: On-request
+
+The agent should write tests when explicitly requested or when making critical changes.
+
+### Allowed Operations
+
+- add-endpoint
+- add-test
+- refactor-code
+
+### Prohibited Operations
+
+- disable-type-checking
+
+### Custom Rules
+
+1. All endpoints should have docstrings
+
+---
+
+## Custom Project Notes
+
+Add project-specific guidance below. This section is preserved across regenerations.
+
+### Architecture Notes
+
+(Document your architecture decisions here)
+
+### Known Issues
+
+(Document any known issues or workarounds)
+
+### Development Workflow
+
+(Describe your team's development workflow, branching strategy, etc.)
+"
+`;
+
+exports[`Project Generation Integration > Snapshot tests > should generate consistent blueprint 1`] = `
+{
+  "agent": {
+    "allowedOperations": [
+      "add-endpoint",
+      "add-test",
+      "refactor-code",
+    ],
+    "customRules": [
+      "All endpoints should have docstrings",
+    ],
+    "prohibitedOperations": [
+      "disable-type-checking",
+    ],
+    "strictness": "balanced",
+    "testRequirements": "on-request",
+  },
+  "features": {
+    "authentication": {
+      "enabled": false,
+      "method": "none",
+    },
+    "cors": false,
+    "database": {
+      "async": false,
+      "enabled": false,
+      "migrations": false,
+      "orm": "none",
+      "type": "none",
+    },
+    "healthCheck": true,
+    "openapi": true,
+    "rateLimiting": false,
+  },
+  "infrastructure": {
+    "ci": {
+      "checks": [],
+      "provider": "none",
+    },
+    "deployment": {
+      "target": "docker",
+    },
+    "docker": {
+      "compose": false,
+      "enabled": false,
+      "registry": "docker.io",
+    },
+  },
+  "meta": {
+    "agentgenVersion": "0.1.0",
+    "generatedAt": "2026-01-07T12:00:00.000Z",
+    "packId": "python-api",
+    "packVersion": "1.0.0",
+  },
+  "paths": {
+    "outputDir": "/home/user/Agentgen/tests/tmp/blueprint-snapshot",
+    "sourceDir": "src",
+    "testDir": "tests",
+  },
+  "project": {
+    "description": "Blueprint snapshot test",
+    "license": "MIT",
+    "name": "blueprint-snapshot",
+  },
+  "stack": {
+    "dependencies": {
+      "fastapi": "^0.104.1",
+      "pydantic": "^2.5.0",
+      "uvicorn": "^0.24.0",
+    },
+    "devDependencies": {
+      "httpx": "^0.25.2",
+      "pytest": "^7.4.3",
+      "ruff": "^0.1.8",
+    },
+    "framework": "fastapi",
+    "language": "python",
+    "runtime": {
+      "manager": "poetry",
+      "version": ">=3.11,<4.0",
+    },
+  },
+  "tooling": {
+    "formatter": {
+      "configFile": "pyproject.toml",
+      "tool": "ruff",
+    },
+    "linter": {
+      "configFile": "pyproject.toml",
+      "tool": "ruff",
+    },
+    "testing": {
+      "coverage": false,
+      "coverageThreshold": 80,
+      "framework": "pytest",
+    },
+    "typeChecker": {
+      "configFile": "pyproject.toml",
+      "tool": "mypy",
+    },
+  },
+  "version": "1.0",
+}
+`;
+
+exports[`Project Generation Integration > Snapshot tests > should generate consistent pyproject.toml 1`] = `
+"[tool.poetry]
+name = "snapshot-test"
+version = "0.1.0"
+description = "Snapshot test project"
+authors = ["Test Author"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.11,<4.0"
+fastapi = "^0.104.1"
+uvicorn = "^0.24.0"
+pydantic = "^2.5.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.3"
+httpx = "^0.25.2"
+ruff = "^0.1.8"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 100
+target-version = "py"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W"]
+ignore = []
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.mypy]
+python_version = ">=3.11,<4.0"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+"
+`;
