@@ -7,6 +7,7 @@
 import { Command } from 'commander';
 import { executeNewCommand } from './commands/new.js';
 import { executeVerifyDepsCommand } from './commands/verify.js';
+import { executeUpdateAgentCommand } from './commands/update-agent.js';
 import { logger } from '../core/logger.js';
 
 const program = new Command();
@@ -61,6 +62,25 @@ program
         skipTests: options.skipTests,
         verbose: options.verbose,
         outputFile: options.output,
+      });
+    } catch (error) {
+      process.exit(1);
+    }
+  });
+
+// Command: update-agent
+program
+  .command('update-agent <project-path>')
+  .description('Update managed sections in AGENT.md while preserving custom content')
+  .option('--verbose', 'Enable verbose logging', false)
+  .action(async (projectPath: string, options) => {
+    if (options.verbose) {
+      logger.setLevel('debug');
+    }
+
+    try {
+      await executeUpdateAgentCommand(projectPath, {
+        verbose: options.verbose,
       });
     } catch (error) {
       process.exit(1);

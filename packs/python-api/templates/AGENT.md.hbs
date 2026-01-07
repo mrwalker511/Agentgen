@@ -10,6 +10,95 @@
 
 **Stack:** {{stack.framework}} ({{stack.language}} {{stack.runtime.version}})
 
+<!-- agentgen:managed:start:quickstart -->
+## Quickstart
+
+```bash
+# Install dependencies
+poetry install
+
+# Run development server
+poetry run uvicorn {{toSnakeCase project.name}}.main:app --reload
+```
+
+**Server will be available at:** `http://localhost:8000`
+{{#if features.openapi}}
+
+**API documentation:**
+- OpenAPI (Swagger): `http://localhost:8000/docs`
+- ReDoc: `http://localhost:8000/redoc`
+{{/if}}
+{{#if features.healthCheck}}
+
+**Health check:** `http://localhost:8000/health`
+{{/if}}
+<!-- agentgen:managed:end:quickstart -->
+
+<!-- agentgen:managed:start:verification -->
+## Dependency Verification
+
+Run dependency verification to ensure all packages are compatible:
+
+```bash
+# Verify dependencies
+agentgen verify-deps .
+```
+
+This will:
+1. Lock dependencies with Poetry
+2. Install all packages
+3. Run `pip check` to verify compatibility
+4. Run the test suite
+
+Results are saved to `agentgen.verify.json`.
+<!-- agentgen:managed:end:verification -->
+
+<!-- agentgen:managed:start:structure -->
+## Repository Structure
+
+```
+{{project.name}}/
+├── {{paths.sourceDir}}/
+│   └── {{toSnakeCase project.name}}/
+│       ├── __init__.py
+│       └── main.py              # FastAPI application
+{{#if features.database.enabled}}
+│       ├── db/                  # Database configuration
+│       │   ├── __init__.py
+│       │   ├── session.py
+│       │   └── models.py
+{{/if}}
+{{#if features.authentication.enabled}}
+│       └── auth/                # Authentication
+│           ├── __init__.py
+│           └── {{features.authentication.method}}.py
+{{/if}}
+├── {{paths.testDir}}/
+│   ├── __init__.py
+│   ├── conftest.py
+│   └── test_smoke.py
+{{#if (and features.database.enabled features.database.migrations)}}
+├── alembic/                    # Database migrations
+│   └── env.py
+{{/if}}
+├── pyproject.toml              # Dependencies and config
+├── poetry.lock                 # Locked dependencies
+├── README.md
+├── AGENT.md                    # This file
+└── .gitignore
+{{#if infrastructure.docker.enabled}}
+├── Dockerfile
+{{#if infrastructure.docker.compose}}
+└── docker-compose.yml         # Services (app + database)
+{{/if}}
+{{/if}}
+{{#if (ne infrastructure.ci.provider 'none')}}
+└── .github/workflows/
+    └── ci.yml                 # CI/CD pipeline
+{{/if}}
+```
+<!-- agentgen:managed:end:structure -->
+
 ## Dependencies
 
 ### Production
@@ -29,6 +118,12 @@
 {{/if}}
 {{#if features.healthCheck}}
 - **Health Check:** Available at `/health`
+{{/if}}
+{{#if features.database.enabled}}
+- **Database:** {{capitalize features.database.type}} with {{capitalize features.database.orm}}
+{{/if}}
+{{#if features.authentication.enabled}}
+- **Authentication:** {{features.authentication.method}}
 {{/if}}
 
 ## Development Tooling
@@ -63,25 +158,9 @@ pytest
 pytest --cov={{paths.sourceDir}}
 ```
 
-## Development Workflow
+## Common Tasks
 
-### Initial Setup
-
-```bash
-# Install dependencies
-poetry install
-
-# Run development server
-poetry run uvicorn {{toSnakeCase project.name}}.main:app --reload
-```
-
-**Server will be available at:** `http://localhost:8000`
-**API documentation:** `http://localhost:8000/docs`
-{{#if features.healthCheck}}
-**Health check:** `http://localhost:8000/health`
-{{/if}}
-
-### Common Commands
+### Dependency Management
 
 ```bash
 # Add dependency
