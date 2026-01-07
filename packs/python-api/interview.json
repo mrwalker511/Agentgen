@@ -1,0 +1,139 @@
+{
+  "version": "1.0",
+  "questions": [
+    {
+      "id": "projectName",
+      "type": "text",
+      "message": "Project name",
+      "default": "my-api",
+      "validate": "required"
+    },
+    {
+      "id": "description",
+      "type": "text",
+      "message": "Project description",
+      "default": "A FastAPI application"
+    },
+    {
+      "id": "author",
+      "type": "text",
+      "message": "Author name (optional)"
+    },
+    {
+      "id": "pythonVersion",
+      "type": "select",
+      "message": "Python version",
+      "default": "3.11",
+      "choices": [
+        {
+          "name": "Python 3.10",
+          "value": "3.10"
+        },
+        {
+          "name": "Python 3.11",
+          "value": "3.11"
+        },
+        {
+          "name": "Python 3.12",
+          "value": "3.12"
+        }
+      ]
+    },
+    {
+      "id": "enableDatabase",
+      "type": "confirm",
+      "message": "Enable database support?",
+      "default": false
+    },
+    {
+      "id": "databaseType",
+      "type": "select",
+      "message": "Database type",
+      "default": "postgresql",
+      "choices": [
+        {
+          "name": "PostgreSQL",
+          "value": "postgresql"
+        },
+        {
+          "name": "MySQL",
+          "value": "mysql"
+        },
+        {
+          "name": "SQLite",
+          "value": "sqlite"
+        }
+      ],
+      "when": {
+        "field": "enableDatabase",
+        "equals": true
+      }
+    },
+    {
+      "id": "enableAuth",
+      "type": "confirm",
+      "message": "Enable authentication?",
+      "default": false
+    },
+    {
+      "id": "authMethod",
+      "type": "select",
+      "message": "Authentication method",
+      "default": "jwt",
+      "choices": [
+        {
+          "name": "JWT (JSON Web Tokens)",
+          "value": "jwt"
+        },
+        {
+          "name": "OAuth2",
+          "value": "oauth2"
+        },
+        {
+          "name": "API Key",
+          "value": "api-key"
+        }
+      ],
+      "when": {
+        "field": "enableAuth",
+        "equals": true
+      }
+    },
+    {
+      "id": "enableDocker",
+      "type": "confirm",
+      "message": "Include Docker configuration?",
+      "default": false
+    },
+    {
+      "id": "enableCI",
+      "type": "confirm",
+      "message": "Include CI/CD configuration?",
+      "default": false
+    },
+    {
+      "id": "ciProvider",
+      "type": "select",
+      "message": "CI/CD provider",
+      "default": "github-actions",
+      "choices": [
+        {
+          "name": "GitHub Actions",
+          "value": "github-actions"
+        },
+        {
+          "name": "GitLab CI",
+          "value": "gitlab-ci"
+        },
+        {
+          "name": "CircleCI",
+          "value": "circleci"
+        }
+      ],
+      "when": {
+        "field": "enableCI",
+        "equals": true
+      }
+    }
+  ]
+}

@@ -19,12 +19,12 @@ program
 // Command: new
 program
   .command('new <output-path>')
-  .description('Generate a new project')
+  .description('Generate a new project (interactive by default)')
   .requiredOption('--pack <pack-id>', 'Template pack to use (e.g., python-api, node-api)')
-  .requiredOption('--name <project-name>', 'Project name')
+  .option('--name <project-name>', 'Project name (required for --non-interactive)')
   .option('--non-interactive', 'Skip interactive prompts', false)
-  .option('--description <description>', 'Project description')
-  .option('--author <author>', 'Project author')
+  .option('--description <description>', 'Project description (non-interactive only)')
+  .option('--author <author>', 'Project author (non-interactive only)')
   .option('--verbose', 'Enable verbose logging', false)
   .action(async (outputPath: string, options) => {
     if (options.verbose) {
