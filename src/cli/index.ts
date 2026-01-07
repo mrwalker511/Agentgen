@@ -6,6 +6,7 @@
 
 import { Command } from 'commander';
 import { executeNewCommand } from './commands/new.js';
+import { executeVerifyDepsCommand } from './commands/verify.js';
 import { logger } from '../core/logger.js';
 
 const program = new Command();
@@ -37,6 +38,29 @@ program
         nonInteractive: options.nonInteractive,
         description: options.description,
         author: options.author,
+      });
+    } catch (error) {
+      process.exit(1);
+    }
+  });
+
+// Command: verify-deps
+program
+  .command('verify-deps <project-path>')
+  .description('Verify project dependencies using ecosystem tools')
+  .option('--skip-tests', 'Skip running tests', false)
+  .option('--verbose', 'Enable verbose logging and show full command output', false)
+  .option('--output <file>', 'Custom output file for verification report')
+  .action(async (projectPath: string, options) => {
+    if (options.verbose) {
+      logger.setLevel('debug');
+    }
+
+    try {
+      await executeVerifyDepsCommand(projectPath, {
+        skipTests: options.skipTests,
+        verbose: options.verbose,
+        outputFile: options.output,
       });
     } catch (error) {
       process.exit(1);

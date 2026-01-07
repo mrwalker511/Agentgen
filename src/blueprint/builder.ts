@@ -53,6 +53,7 @@ export function buildBlueprint(pack: Pack, options: BuildBlueprintOptions): Blue
       },
       devDependencies: {
         pytest: '^7.4.3',
+        httpx: '^0.25.2',
         ruff: '^0.1.8',
       },
     },
