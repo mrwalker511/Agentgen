@@ -42,6 +42,16 @@ function registerHelpers(): void {
     return a === b;
   });
 
+  // Helper: Not equals check
+  Handlebars.registerHelper('ne', (a: unknown, b: unknown) => {
+    return a !== b;
+  });
+
+  // Helper: Logical AND
+  Handlebars.registerHelper('and', (a: unknown, b: unknown) => {
+    return a && b;
+  });
+
   // Helper: Replace string
   Handlebars.registerHelper('replace', (str: string, search: string, replacement: string) => {
     return str.replace(new RegExp(search, 'g'), replacement);
