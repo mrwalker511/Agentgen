@@ -6,6 +6,7 @@
 
 import { Command } from 'commander';
 import { executeNewCommand } from './commands/new.js';
+import { executeInitCommand } from './commands/init.js';
 import { executeVerifyDepsCommand } from './commands/verify.js';
 import { executeUpdateAgentCommand } from './commands/update-agent.js';
 import { logger } from '../core/logger.js';
@@ -81,6 +82,34 @@ program
     try {
       await executeUpdateAgentCommand(projectPath, {
         verbose: options.verbose,
+      });
+    } catch (error) {
+      process.exit(1);
+    }
+  });
+
+// Command: init (alias for new)
+program
+  .command('init <output-path>')
+  .description('Generate a new project (alias for new command)')
+  .requiredOption('--pack <pack-id>', 'Template pack to use (e.g., python-api, node-api)')
+  .option('--name <project-name>', 'Project name (required for --non-interactive)')
+  .option('--non-interactive', 'Skip interactive prompts', false)
+  .option('--description <description>', 'Project description (non-interactive only)')
+  .option('--author <author>', 'Project author (non-interactive only)')
+  .option('--verbose', 'Enable verbose logging', false)
+  .action(async (outputPath: string, options) => {
+    if (options.verbose) {
+      logger.setLevel('debug');
+    }
+
+    try {
+      await executeInitCommand(outputPath, {
+        pack: options.pack,
+        name: options.name,
+        nonInteractive: options.nonInteractive,
+        description: options.description,
+        author: options.author,
       });
     } catch (error) {
       process.exit(1);

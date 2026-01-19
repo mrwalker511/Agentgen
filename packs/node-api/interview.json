@@ -1,0 +1,143 @@
+{
+  "version": "1.0",
+  "questions": [
+    {
+      "id": "projectName",
+      "type": "text",
+      "message": "Project name",
+      "default": "my-api",
+      "validate": "required"
+    },
+    {
+      "id": "description",
+      "type": "text",
+      "message": "Project description",
+      "default": "An Express API application"
+    },
+    {
+      "id": "author",
+      "type": "text",
+      "message": "Author name (optional)"
+    },
+    {
+      "id": "nodeVersion",
+      "type": "select",
+      "message": "Node.js version",
+      "default": "18.x",
+      "choices": [
+        {
+          "name": "Node.js 18.x",
+          "value": "18.x"
+        },
+        {
+          "name": "Node.js 20.x",
+          "value": "20.x"
+        },
+        {
+          "name": "Node.js 21.x",
+          "value": "21.x"
+        }
+      ]
+    },
+    {
+      "id": "enableDatabase",
+      "type": "confirm",
+      "message": "Enable database support?",
+      "default": false
+    },
+    {
+      "id": "databaseType",
+      "type": "select",
+      "message": "Database type",
+      "default": "postgresql",
+      "choices": [
+        {
+          "name": "PostgreSQL",
+          "value": "postgresql"
+        },
+        {
+          "name": "MySQL",
+          "value": "mysql"
+        },
+        {
+          "name": "MongoDB",
+          "value": "mongodb"
+        },
+        {
+          "name": "SQLite",
+          "value": "sqlite"
+        }
+      ],
+      "when": {
+        "field": "enableDatabase",
+        "equals": true
+      }
+    },
+    {
+      "id": "enableAuth",
+      "type": "confirm",
+      "message": "Enable authentication?",
+      "default": false
+    },
+    {
+      "id": "authMethod",
+      "type": "select",
+      "message": "Authentication method",
+      "default": "jwt",
+      "choices": [
+        {
+          "name": "JWT (JSON Web Tokens)",
+          "value": "jwt"
+        },
+        {
+          "name": "OAuth2",
+          "value": "oauth2"
+        },
+        {
+          "name": "API Key",
+          "value": "api-key"
+        }
+      ],
+      "when": {
+        "field": "enableAuth",
+        "equals": true
+      }
+    },
+    {
+      "id": "enableDocker",
+      "type": "confirm",
+      "message": "Include Docker configuration?",
+      "default": false
+    },
+    {
+      "id": "enableCI",
+      "type": "confirm",
+      "message": "Include CI/CD configuration?",
+      "default": false
+    },
+    {
+      "id": "ciProvider",
+      "type": "select",
+      "message": "CI/CD provider",
+      "default": "github-actions",
+      "choices": [
+        {
+          "name": "GitHub Actions",
+          "value": "github-actions"
+        },
+        {
+          "name": "GitLab CI",
+          "value": "gitlab-ci"
+        },
+        {
+          "name": "CircleCI",
+          "value": "circleci"
+        }
+      ],
+      "when": {
+        "field": "enableCI",
+        "equals": true
+      }
+    }
+  ]
+}
