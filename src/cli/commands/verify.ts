@@ -3,7 +3,7 @@
  */
 
 import * as path from 'path';
-import { runPythonVerification, detectEcosystem } from '../../verification/runner.js';
+import { runPythonVerification, runNodeVerification, detectEcosystem } from '../../verification/runner.js';
 import { VerificationReport } from '../../verification/types.js';
 import { resolvePath, writeFileSafe } from '../../core/fs.js';
 import { logger } from '../../core/logger.js';
@@ -49,8 +49,11 @@ export async function executeVerifyDepsCommand(
         verbose: options.verbose,
       });
     } else {
-      output.error(`Ecosystem '${ecosystem}' verification not implemented yet`);
-      process.exit(1);
+      report = await runNodeVerification({
+        projectPath: resolvedPath,
+        skipTests: options.skipTests,
+        verbose: options.verbose,
+      });
     }
 
     // Write report to file

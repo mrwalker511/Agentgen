@@ -66,3 +66,19 @@ export function listFiles(dirPath: string): string[] {
 export function resolvePath(...pathSegments: string[]): string {
   return path.resolve(process.cwd(), ...pathSegments);
 }
+
+/**
+ * Resolve a path within a base directory.
+ *
+ * Prevents writing/reading outside the base directory via `..` segments or absolute paths.
+ */
+export function resolveInside(baseDir: string, relativePath: string): string {
+  const base = path.resolve(baseDir);
+  const target = path.resolve(baseDir, relativePath);
+
+  if (target === base || target.startsWith(base + path.sep)) {
+    return target;
+  }
+
+  throw new FileWriteError(target, 'Path traversal detected');
+}

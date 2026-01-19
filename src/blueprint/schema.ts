@@ -34,7 +34,13 @@ const BlueprintMetaSchema = z.object({
 });
 
 const ProjectConfigSchema = z.object({
-  name: z.string(),
+  name: z
+    .string()
+    .min(1)
+    .max(214)
+    .regex(/^[a-z0-9][a-z0-9-_]*$/i, {
+      message: 'Project name must be a safe identifier (letters, numbers, hyphens, underscores)',
+    }),
   description: z.string(),
   author: z.string().optional(),
   license: z.string().optional(),
@@ -64,15 +70,15 @@ const StackConfigSchema = z.object({
 
 const DatabaseFeatureSchema = z.object({
   enabled: z.boolean(),
-  type: z.string().optional(),
-  orm: z.string().optional(),
-  migrations: z.boolean().optional(),
-  async: z.boolean().optional(),
+  type: z.string(),
+  orm: z.string(),
+  migrations: z.boolean(),
+  async: z.boolean(),
 });
 
 const AuthenticationFeatureSchema = z.object({
   enabled: z.boolean(),
-  method: z.string().optional(),
+  method: z.string(),
 });
 
 const FeaturesConfigSchema = z.object({
@@ -86,13 +92,13 @@ const FeaturesConfigSchema = z.object({
 
 const ToolConfigSchema = z.object({
   tool: z.string(),
-  configFile: z.string().optional(),
+  configFile: z.string(),
 });
 
 const TestingConfigSchema = z.object({
   framework: z.string(),
   coverage: z.boolean(),
-  coverageThreshold: z.number().optional(),
+  coverageThreshold: z.number(),
 });
 
 const ToolingConfigSchema = z.object({
@@ -104,8 +110,8 @@ const ToolingConfigSchema = z.object({
 
 const DockerConfigSchema = z.object({
   enabled: z.boolean(),
-  compose: z.boolean().optional(),
-  registry: z.string().optional(),
+  compose: z.boolean(),
+  registry: z.string(),
 });
 
 const CIConfigSchema = z.object({
@@ -132,9 +138,15 @@ const AgentConfigSchema = z.object({
 });
 
 const PathsConfigSchema = z.object({
-  outputDir: z.string(),
-  sourceDir: z.string(),
-  testDir: z.string(),
+  outputDir: z.string().min(1),
+  sourceDir: z
+    .string()
+    .min(1)
+    .regex(/^[a-zA-Z0-9._-]+$/, { message: 'sourceDir must be a single directory name' }),
+  testDir: z
+    .string()
+    .min(1)
+    .regex(/^[a-zA-Z0-9._-]+$/, { message: 'testDir must be a single directory name' }),
 });
 
 export const BlueprintSchema = z

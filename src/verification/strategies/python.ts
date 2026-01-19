@@ -2,42 +2,18 @@
  * Python verification strategy using Poetry
  */
 
-import { execSync } from 'child_process';
 import { VerificationOptions, VerificationReport, VerificationStep } from '../types.js';
 import { logger } from '../../core/logger.js';
-import { AgentgenError } from '../../core/errors.js';
+import { executeCommand } from '../../core/exec.js';
 
 const VERIFICATION_VERSION = '1.0';
-
-/**
- * Execute a command and capture output
- */
-function executeCommand(command: string, cwd: string, verbose: boolean): { exitCode: number; output: string; error?: string } {
-  try {
-    const output = execSync(command, {
-      cwd,
-      encoding: 'utf-8',
-      stdio: verbose ? 'inherit' : 'pipe',
-      timeout: 300000, // 5 minute timeout
-    });
-
-    return {
-      exitCode: 0,
-      output: output.toString(),
-    };
-  } catch (error: any) {
-    return {
-      exitCode: error.status || 1,
-      output: error.stdout?.toString() || '',
-      error: error.stderr?.toString() || error.message,
-    };
-  }
-}
 
 /**
  * Execute a verification step
  */
 async function executeStep(step: VerificationStep, projectPath: string, verbose: boolean): Promise<VerificationStep> {
+  await Promise.resolve();
+
   const startTime = new Date();
   step.startTime = startTime.toISOString();
   step.status = 'running';
@@ -166,7 +142,7 @@ export function getPoetryVersion(): string | null {
     const result = executeCommand('poetry --version', process.cwd(), false);
     if (result.exitCode === 0) {
       const match = result.output.match(/Poetry (version )?([\d.]+)/);
-      return match ? match[2] : null;
+      return match && match[2] ? match[2] : null;
     }
     return null;
   } catch (error) {
