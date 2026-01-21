@@ -5,7 +5,6 @@
 import { execSync } from 'child_process';
 import { VerificationOptions, VerificationReport, VerificationStep } from '../types.js';
 import { logger } from '../../core/logger.js';
-import { AgentgenError } from '../../core/errors.js';
 
 const VERIFICATION_VERSION = '1.0';
 
@@ -166,7 +165,7 @@ export function getPoetryVersion(): string | null {
     const result = executeCommand('poetry --version', process.cwd(), false);
     if (result.exitCode === 0) {
       const match = result.output.match(/Poetry (version )?([\d.]+)/);
-      return match ? match[2] : null;
+      return match && match[2] ? match[2] : null;
     }
     return null;
   } catch (error) {

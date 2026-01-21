@@ -1,0 +1,19 @@
+/**
+ * API integration tests
+ */
+{{#if (eq tooling.testing.framework 'vitest')}}
+import { describe, it, expect } from 'vitest';
+{{else if (eq tooling.testing.framework 'jest')}}
+import { describe, it, expect } from '@jest/globals';
+{{/if}}
+
+describe('{{project.name}} API', () => {
+  it('should have basic test', () => {
+    expect(true).toBe(true);
+  });
+
+  it('should export app', async () => {
+    const { default: app } = await import('../src/index.js');
+    expect(app).toBeDefined();
+  });
+});

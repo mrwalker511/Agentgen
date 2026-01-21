@@ -1,0 +1,51 @@
+/**
+ * {{project.description}}
+ */
+import express, { Request, Response } from 'express';
+{{#if features.cors}}
+import cors from 'cors';
+{{/if}}
+{{#if features.helmet}}
+import helmet from 'helmet';
+{{/if}}
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+{{#if features.cors}}
+app.use(cors());
+{{/if}}
+{{#if features.helmet}}
+app.use(helmet());
+{{/if}}
+
+// Root endpoint
+app.get('/', (req: Request, res: Response) => {
+  res.json({
+    message: 'Welcome to {{project.name}}',
+    version: '0.1.0'
+  });
+});
+
+{{#if features.healthCheck}}
+// Health check endpoint
+app.get('/health', (req: Request, res: Response) => {
+  res.json({
+    status: 'healthy',
+    service: '{{project.name}}',
+    version: '0.1.0',
+    timestamp: new Date().toISOString()
+  });
+});
+{{/if}}
+
+// Start server
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`📚 Health check: http://localhost:${PORT}/health`);
+});
+
+export default app;

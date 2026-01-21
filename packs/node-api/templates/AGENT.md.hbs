@@ -1,0 +1,251 @@
+# AI Agent Guidelines for {{project.name}}
+
+**Generated:** {{meta.generatedAt}}
+**Pack:** {{meta.packId}}@{{meta.packVersion}}
+**Agentgen:** {{meta.agentgenVersion}}
+
+## Project Overview
+
+{{project.description}}
+
+**Stack:** {{stack.framework}} ({{stack.language}} on Node.js {{stack.runtime.version}})
+
+<!-- agentgen:managed:start:quickstart -->
+## Quickstart
+
+```bash
+# Install dependencies
+npm install
+
+# Run development server
+npm run dev
+```
+
+**Server will be available at:** `http://localhost:3000`
+{{#if features.healthCheck}}
+
+**Health check:** `http://localhost:3000/health`
+{{/if}}
+<!-- agentgen:managed:end:quickstart -->
+
+<!-- agentgen:managed:start:verification -->
+## Dependency Verification
+
+Run dependency verification to ensure all packages are compatible:
+
+```bash
+# Verify dependencies
+agentgen verify-deps .
+```
+
+This will:
+1. Install all dependencies with npm
+2. Verify dependency tree with `npm ls`
+3. Run the test suite
+
+Results are saved to `agentgen.verify.json`.
+<!-- agentgen:managed:end:verification -->
+
+<!-- agentgen:managed:start:structure -->
+## Repository Structure
+
+```
+{{project.name}}/
+├── src/
+│   └── index.ts                # Express application
+{{#if features.database.enabled}}
+│   ├── db/                     # Database configuration
+│   │   └── client.ts
+{{/if}}
+{{#if features.authentication.enabled}}
+│   └── auth/                   # Authentication
+│       └── {{features.authentication.method}}.ts
+{{/if}}
+├── tests/
+│   └── api.test.ts
+├── package.json                # Dependencies and scripts
+├── tsconfig.json               # TypeScript configuration
+├── README.md
+├── AGENT.md                    # This file
+└── .gitignore
+{{#if infrastructure.docker.enabled}}
+├── Dockerfile
+{{#if infrastructure.docker.compose}}
+└── docker-compose.yml         # Services (app + database)
+{{/if}}
+{{/if}}
+{{#if (ne infrastructure.ci.provider 'none')}}
+└── .github/workflows/
+    └── ci.yml                 # CI/CD pipeline
+{{/if}}
+```
+<!-- agentgen:managed:end:structure -->
+
+## Dependencies
+
+### Production
+{{#each stack.dependencies}}
+- `{{@key}}` {{this}}
+{{/each}}
+
+### Development
+{{#each stack.devDependencies}}
+- `{{@key}}` {{this}}
+{{/each}}
+
+## Enabled Features
+
+{{#if features.healthCheck}}
+- **Health Check:** Available at `/health`
+{{/if}}
+{{#if features.database.enabled}}
+- **Database:** {{capitalize features.database.type}} with {{capitalize features.database.orm}}
+{{/if}}
+{{#if features.authentication.enabled}}
+- **Authentication:** {{features.authentication.method}}
+{{/if}}
+{{#if features.cors}}
+- **CORS:** Enabled
+{{/if}}
+{{#if features.helmet}}
+- **Security Headers:** Helmet middleware enabled
+{{/if}}
+
+## Development Tooling
+
+### Code Quality
+{{#if tooling.linter.tool}}
+- **Linter:** {{tooling.linter.tool}}
+{{/if}}
+{{#if tooling.formatter.tool}}
+- **Formatter:** {{tooling.formatter.tool}}
+{{/if}}
+- **Type Checker:** TypeScript
+
+### Testing
+{{#if tooling.testing.framework}}
+- **Framework:** {{tooling.testing.framework}}
+{{#if tooling.testing.coverage}}
+- **Coverage:** Enabled (threshold: {{tooling.testing.coverageThreshold}}%)
+{{/if}}
+{{/if}}
+
+### Commands
+
+```bash
+# Development
+npm run dev
+
+# Build
+npm run build
+
+# Start production
+npm start
+
+{{#if tooling.linter.tool}}
+# Lint code
+npm run lint
+
+# Lint and fix
+npm run lint:fix
+{{/if}}
+
+{{#if tooling.formatter.tool}}
+# Format code
+npm run format
+{{/if}}
+
+# Type check
+npm run typecheck
+
+{{#if tooling.testing.framework}}
+# Run tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+{{#if tooling.testing.coverage}}
+# Run with coverage
+npm run test:coverage
+{{/if}}
+{{/if}}
+```
+
+## Common Tasks
+
+### Dependency Management
+
+```bash
+# Add dependency
+npm install <package-name>
+
+# Add dev dependency
+npm install --save-dev <package-name>
+
+# Update dependencies
+npm update
+
+# Check for outdated packages
+npm outdated
+```
+
+## AI Agent Rules
+
+### Strictness Level: {{capitalize agent.strictness}}
+
+{{#if (eq agent.strictness 'strict')}}
+The AI agent must ask for approval before making any significant changes.
+{{else if (eq agent.strictness 'balanced')}}
+The AI agent has moderate autonomy. It can make reasonable technical decisions but should ask before major architectural changes.
+{{else}}
+The AI agent has broad autonomy.
+{{/if}}
+
+### Test Requirements: {{capitalize agent.testRequirements}}
+
+{{#if (eq agent.testRequirements 'always')}}
+When adding new features or endpoints, the agent **MUST** write corresponding tests.
+{{else if (eq agent.testRequirements 'on-request')}}
+The agent should write tests when explicitly requested or when making critical changes.
+{{else}}
+Tests are optional.
+{{/if}}
+
+### Allowed Operations
+
+{{#each agent.allowedOperations}}
+- {{this}}
+{{/each}}
+
+### Prohibited Operations
+
+{{#each agent.prohibitedOperations}}
+- {{this}}
+{{/each}}
+
+{{#if agent.customRules}}
+### Custom Rules
+
+{{#each agent.customRules}}
+{{add @index 1}}. {{this}}
+{{/each}}
+{{/if}}
+
+---
+
+## Custom Project Notes
+
+Add project-specific guidance below. This section is preserved across regenerations.
+
+### Architecture Notes
+
+(Document your architecture decisions here)
+
+### Known Issues
+
+(Document any known issues or workarounds)
+
+### Development Workflow
+
+(Describe your team's development workflow, branching strategy, etc.)

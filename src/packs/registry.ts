@@ -63,7 +63,8 @@ export class PackRegistry {
         const metadata = await this.getPackMetadata(packId);
         packsWithMetadata.push(metadata);
       } catch (error) {
-        logger.warn(`Failed to load metadata for pack ${packId}: ${error}`);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        logger.warn(`Failed to load metadata for pack ${packId}: ${errorMessage}`);
       }
     }
 

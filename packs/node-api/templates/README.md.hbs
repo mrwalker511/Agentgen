@@ -1,0 +1,77 @@
+# {{project.name}}
+
+{{project.description}}
+
+## Setup
+
+```bash
+# Install dependencies
+npm install
+
+# Run development server
+npm run dev
+```
+
+## API Documentation
+
+When the server is running, visit:
+- API endpoint: http://localhost:3000
+- Health check: http://localhost:3000/health
+
+## Testing
+
+```bash
+# Run tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+{{#if tooling.testing.coverage}}
+# Run with coverage
+npm run test:coverage
+{{/if}}
+```
+
+## Building
+
+```bash
+# Build for production
+npm run build
+
+# Start production server
+npm start
+```
+
+## Project Structure
+
+```
+{{project.name}}/
+├── src/              # Application source code
+│   └── index.ts      # Entry point
+├── tests/            # Tests
+│   └── api.test.ts
+├── package.json      # Dependencies and scripts
+├── tsconfig.json     # TypeScript configuration
+├── AGENT.md          # AI agent guidelines
+└── README.md         # This file
+```
+
+## Development
+
+This project uses:
+- **{{stack.framework}}** - Web framework
+- **TypeScript** - Type-safe JavaScript
+{{#if tooling.linter.tool}}
+- **{{tooling.linter.tool}}** - Linting
+{{/if}}
+{{#if tooling.formatter.tool}}
+- **{{tooling.formatter.tool}}** - Code formatting
+{{/if}}
+{{#if tooling.testing.framework}}
+- **{{tooling.testing.framework}}** - Testing
+{{/if}}
+
+## License
+
+{{project.license}}

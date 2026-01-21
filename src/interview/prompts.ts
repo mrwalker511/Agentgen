@@ -2,7 +2,6 @@
  * Interview prompt utilities
  */
 
-import inquirer from 'inquirer';
 import { QuestionType, QuestionChoice } from './types.js';
 
 /**
@@ -24,8 +23,11 @@ export function createTextPrompt(id: string, message: string, defaultValue?: str
       if (validate === 'required' && !value.trim()) {
         return 'This field is required';
       }
-      if (validate.startsWith('min:') && value.length < parseInt(validate.split(':')[1])) {
-        return `Must be at least ${validate.split(':')[1]} characters`;
+      if (validate.startsWith('min:')) {
+        const minValue = validate.split(':')[1];
+        if (minValue && value.length < parseInt(minValue)) {
+          return `Must be at least ${minValue} characters`;
+        }
       }
       if (validate === 'email') {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -104,11 +106,17 @@ export function createNumberPrompt(id: string, message: string, defaultValue?: n
       if (validate === 'required' && value === null) {
         return 'This field is required';
       }
-      if (validate.startsWith('min:') && value < parseInt(validate.split(':')[1])) {
-        return `Must be at least ${validate.split(':')[1]}`;
+      if (validate.startsWith('min:')) {
+        const minValue = validate.split(':')[1];
+        if (minValue && value < parseInt(minValue)) {
+          return `Must be at least ${minValue}`;
+        }
       }
-      if (validate.startsWith('max:') && value > parseInt(validate.split(':')[1])) {
-        return `Must be at most ${validate.split(':')[1]}`;
+      if (validate.startsWith('max:')) {
+        const maxValue = validate.split(':')[1];
+        if (maxValue && value > parseInt(maxValue)) {
+          return `Must be at most ${maxValue}`;
+        }
       }
       return true;
     };
@@ -144,8 +152,11 @@ export function questionToPrompt(question: any): any {
       if (question.validate === 'required' && !value) {
         return 'This field is required';
       }
-      if (question.validate.startsWith('min:') && typeof value === 'string' && value.length < parseInt(question.validate.split(':')[1])) {
-        return `Must be at least ${question.validate.split(':')[1]} characters`;
+      if (question.validate.startsWith('min:') && typeof value === 'string') {
+        const minValue = question.validate.split(':')[1];
+        if (minValue && value.length < parseInt(minValue)) {
+          return `Must be at least ${minValue} characters`;
+        }
       }
       if (question.validate === 'email' && typeof value === 'string') {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

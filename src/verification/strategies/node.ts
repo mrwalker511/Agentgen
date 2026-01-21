@@ -3,9 +3,9 @@
  */
 
 import { execSync } from 'child_process';
+import { existsSync } from 'fs';
 import { VerificationOptions, VerificationReport, VerificationStep } from '../types.js';
 import { logger } from '../../core/logger.js';
-import { AgentgenError } from '../../core/errors.js';
 
 const VERIFICATION_VERSION = '1.0';
 
@@ -175,14 +175,13 @@ export function detectPackageManager(projectPath: string): 'npm' | 'pnpm' | 'yar
   try {
     // Check for pnpm-lock.yaml
     const pnpmLockPath = `${projectPath}/pnpm-lock.yaml`;
-    const fs = await import('fs');
-    if (fs.existsSync(pnpmLockPath)) {
+    if (existsSync(pnpmLockPath)) {
       return 'pnpm';
     }
 
     // Check for yarn.lock
     const yarnLockPath = `${projectPath}/yarn.lock`;
-    if (fs.existsSync(yarnLockPath)) {
+    if (existsSync(yarnLockPath)) {
       return 'yarn';
     }
 
