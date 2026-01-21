@@ -163,6 +163,128 @@ describe('Project Generation Integration', () => {
     });
   });
 
+  describe('node-api pack', () => {
+    it('should generate minimal Node API project', async () => {
+      const projectPath = path.join(testOutputDir, 'minimal-node-api');
+
+      await executeNewCommand(projectPath, {
+        pack: 'node-api',
+        name: 'minimal-node-api',
+        nonInteractive: true,
+        description: 'Test Node API',
+      });
+
+      // Verify project structure
+      expect(fs.existsSync(projectPath)).toBe(true);
+      expect(fs.existsSync(path.join(projectPath, 'package.json'))).toBe(true);
+      expect(fs.existsSync(path.join(projectPath, 'tsconfig.json'))).toBe(true);
+      expect(fs.existsSync(path.join(projectPath, 'README.md'))).toBe(true);
+      expect(fs.existsSync(path.join(projectPath, 'AGENT.md'))).toBe(true);
+      expect(fs.existsSync(path.join(projectPath, 'project.blueprint.json'))).toBe(true);
+      expect(fs.existsSync(path.join(projectPath, '.gitignore'))).toBe(true);
+
+      // Verify source structure
+      expect(fs.existsSync(path.join(projectPath, 'src', 'index.ts'))).toBe(true);
+
+      // Verify test structure
+      expect(fs.existsSync(path.join(projectPath, 'tests', 'api.test.ts'))).toBe(true);
+    });
+
+    it('should generate valid package.json', async () => {
+      const projectPath = path.join(testOutputDir, 'package-test');
+
+      await executeNewCommand(projectPath, {
+        pack: 'node-api',
+        name: 'package-test',
+        nonInteractive: true,
+        description: 'Package.json test',
+      });
+
+      const packageJsonPath = path.join(projectPath, 'package.json');
+      const content = fs.readFileSync(packageJsonPath, 'utf-8');
+      const packageJson = JSON.parse(content);
+
+      // Check for proper structure
+      expect(packageJson.name).toBe('package-test');
+      expect(packageJson.description).toBe('Package.json test');
+      expect(packageJson.version).toBe('0.1.0');
+      expect(packageJson.type).toBe('module');
+      expect(packageJson.scripts).toBeDefined();
+      expect(packageJson.scripts.dev).toBeDefined();
+      expect(packageJson.scripts.build).toBeDefined();
+      expect(packageJson.dependencies).toBeDefined();
+    });
+
+    it('should generate valid tsconfig.json', async () => {
+      const projectPath = path.join(testOutputDir, 'tsconfig-test');
+
+      await executeNewCommand(projectPath, {
+        pack: 'node-api',
+        name: 'tsconfig-test',
+        nonInteractive: true,
+        description: 'TSConfig test',
+      });
+
+      const tsconfigPath = path.join(projectPath, 'tsconfig.json');
+      const content = fs.readFileSync(tsconfigPath, 'utf-8');
+      const tsconfig = JSON.parse(content);
+
+      // Check for TypeScript config
+      expect(tsconfig.compilerOptions).toBeDefined();
+      expect(tsconfig.compilerOptions.strict).toBe(true);
+      expect(tsconfig.compilerOptions.outDir).toBe('./dist');
+      expect(tsconfig.compilerOptions.rootDir).toBe('./src');
+    });
+
+    it('should generate valid AGENT.md with managed sections', async () => {
+      const projectPath = path.join(testOutputDir, 'node-agent-test');
+
+      await executeNewCommand(projectPath, {
+        pack: 'node-api',
+        name: 'node-agent-test',
+        nonInteractive: true,
+        description: 'Node AGENT.md test',
+      });
+
+      const agentMdPath = path.join(projectPath, 'AGENT.md');
+      const content = fs.readFileSync(agentMdPath, 'utf-8');
+
+      // Check for managed section markers
+      expect(content).toContain('<!-- agentgen:managed:start:quickstart -->');
+      expect(content).toContain('<!-- agentgen:managed:end:quickstart -->');
+      expect(content).toContain('<!-- agentgen:managed:start:verification -->');
+      expect(content).toContain('<!-- agentgen:managed:end:verification -->');
+      expect(content).toContain('<!-- agentgen:managed:start:structure -->');
+      expect(content).toContain('<!-- agentgen:managed:end:structure -->');
+
+      // Check for content
+      expect(content).toContain('# AI Agent Guidelines for node-agent-test');
+      expect(content).toContain('## Quickstart');
+      expect(content).toContain('npm install');
+      expect(content).toContain('## Dependency Verification');
+      expect(content).toContain('agentgen verify-deps');
+    });
+
+    it('should generate working Node project structure', async () => {
+      const projectPath = path.join(testOutputDir, 'node-structure');
+
+      await executeNewCommand(projectPath, {
+        pack: 'node-api',
+        name: 'node-structure',
+        nonInteractive: true,
+        description: 'Node structure test',
+      });
+
+      const indexPath = path.join(projectPath, 'src', 'index.ts');
+      const content = fs.readFileSync(indexPath, 'utf-8');
+
+      // Check for Express imports and setup
+      expect(content).toContain('import express');
+      expect(content).toContain('const app = express()');
+      expect(content).toContain('app.listen(PORT');
+    });
+  });
+
   describe('Snapshot tests', () => {
     it('should generate consistent pyproject.toml', async () => {
       const projectPath = path.join(testOutputDir, 'snapshot-test');
