@@ -2,42 +2,19 @@
  * Node.js verification strategy using npm/pnpm/yarn
  */
 
-import { execSync } from 'child_process';
+import * as fs from 'fs';
 import { VerificationOptions, VerificationReport, VerificationStep } from '../types.js';
 import { logger } from '../../core/logger.js';
-import { AgentgenError } from '../../core/errors.js';
+import { executeCommand } from '../../core/exec.js';
 
 const VERIFICATION_VERSION = '1.0';
-
-/**
- * Execute a command and capture output
- */
-function executeCommand(command: string, cwd: string, verbose: boolean): { exitCode: number; output: string; error?: string } {
-  try {
-    const output = execSync(command, {
-      cwd,
-      encoding: 'utf-8',
-      stdio: verbose ? 'inherit' : 'pipe',
-      timeout: 300000, // 5 minute timeout
-    });
-
-    return {
-      exitCode: 0,
-      output: output.toString(),
-    };
-  } catch (error: any) {
-    return {
-      exitCode: error.status || 1,
-      output: error.stdout?.toString() || '',
-      error: error.stderr?.toString() || error.message,
-    };
-  }
-}
 
 /**
  * Execute a verification step
  */
 async function executeStep(step: VerificationStep, projectPath: string, verbose: boolean): Promise<VerificationStep> {
+  await Promise.resolve();
+
   const startTime = new Date();
   step.startTime = startTime.toISOString();
   step.status = 'running';
@@ -175,7 +152,6 @@ export function detectPackageManager(projectPath: string): 'npm' | 'pnpm' | 'yar
   try {
     // Check for pnpm-lock.yaml
     const pnpmLockPath = `${projectPath}/pnpm-lock.yaml`;
-    const fs = await import('fs');
     if (fs.existsSync(pnpmLockPath)) {
       return 'pnpm';
     }
@@ -188,7 +164,7 @@ export function detectPackageManager(projectPath: string): 'npm' | 'pnpm' | 'yar
 
     // Default to npm
     return 'npm';
-  } catch (error) {
+  } catch {
     return 'npm'; // Default to npm if detection fails
   }
 }

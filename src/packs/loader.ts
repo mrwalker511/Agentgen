@@ -2,6 +2,7 @@
  * Template pack loading
  */
 
+import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -23,28 +24,42 @@ function getPacksDir(): string {
   return path.resolve(__dirname, '../../packs');
 }
 
+const PACK_ID_PATTERN = /^[a-z0-9][a-z0-9-_]*$/;
+
 /**
  * Load a pack by ID
  */
 export async function loadPack(packId: string): Promise<Pack> {
-  const packsDir = getPacksDir();
-  const packPath = path.join(packsDir, packId);
+  const safePackId = packId.trim();
+  if (!PACK_ID_PATTERN.test(safePackId)) {
+    throw new PackLoadError(packId, 'Invalid pack id');
+  }
 
-  logger.debug(`Loading pack '${packId}' from ${packPath}`);
+  await Promise.resolve();
+
+  const packsDir = getPacksDir();
+  const resolvedPacksDir = path.resolve(packsDir);
+  const packPath = path.resolve(packsDir, safePackId);
+
+  if (!(packPath === resolvedPacksDir || packPath.startsWith(resolvedPacksDir + path.sep))) {
+    throw new PackLoadError(safePackId, 'Invalid pack path');
+  }
+
+  logger.debug(`Loading pack '${safePackId}' from ${packPath}`);
 
   // Check pack directory exists
   if (!pathExists(packPath)) {
-    throw new PackNotFoundError(packId);
+    throw new PackNotFoundError(safePackId);
   }
 
   if (!isDirectory(packPath)) {
-    throw new PackLoadError(packId, 'Pack path is not a directory');
+    throw new PackLoadError(safePackId, 'Pack path is not a directory');
   }
 
   // Load pack.json
   const packJsonPath = path.join(packPath, 'pack.json');
   if (!pathExists(packJsonPath)) {
-    throw new PackLoadError(packId, 'pack.json not found');
+    throw new PackLoadError(safePackId, 'pack.json not found');
   }
 
   let metadata: PackMetadata;
@@ -53,25 +68,25 @@ export async function loadPack(packId: string): Promise<Pack> {
     metadata = JSON.parse(packJsonContent) as PackMetadata;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    throw new PackLoadError(packId, `Failed to parse pack.json: ${message}`);
+    throw new PackLoadError(safePackId, `Failed to parse pack.json: ${message}`);
   }
 
   // Validate metadata
   if (!metadata.id || !metadata.version || !metadata.name) {
-    throw new PackLoadError(packId, 'pack.json missing required fields (id, version, name)');
+    throw new PackLoadError(safePackId, 'pack.json missing required fields (id, version, name)');
   }
 
-  if (metadata.id !== packId) {
+  if (metadata.id !== safePackId) {
     throw new PackLoadError(
-      packId,
-      `pack.json id '${metadata.id}' does not match directory name '${packId}'`
+      safePackId,
+      `pack.json id '${metadata.id}' does not match directory name '${safePackId}'`
     );
   }
 
   // Check templates directory exists
   const templatesPath = path.join(packPath, 'templates');
   if (!pathExists(templatesPath) || !isDirectory(templatesPath)) {
-    throw new PackLoadError(packId, 'templates directory not found');
+    throw new PackLoadError(safePackId, 'templates directory not found');
   }
 
   logger.info(`Loaded pack '${metadata.name}' v${metadata.version}`);
@@ -96,10 +111,25 @@ export function loadTemplateFiles(pack: Pack): TemplateFile[] {
       const fullPath = path.join(dirPath, entry);
       const relativePath = path.relative(relativeTo, fullPath);
 
-      if (isDirectory(fullPath)) {
+      let stats: fs.Stats;
+      try {
+        stats = fs.lstatSync(fullPath);
+      } catch {
+        continue;
+      }
+
+      if (stats.isSymbolicLink()) {
+        logger.warn(`Skipping symlink in templates: ${relativePath}`);
+        continue;
+      }
+
+      if (stats.isDirectory()) {
         // Recursively scan subdirectories
         scanDirectory(fullPath, relativeTo);
-      } else if (entry.endsWith('.hbs')) {
+        continue;
+      }
+
+      if (entry.endsWith('.hbs')) {
         // Load template file
         const content = readFileString(fullPath);
         templates.push({

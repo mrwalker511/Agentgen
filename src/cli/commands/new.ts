@@ -91,7 +91,7 @@ export async function executeNewCommand(
 
     // Success!
     output.blank();
-    output.success(`Project '${options.name}' created successfully!`);
+    output.success(`Project '${blueprint.project.name}' created successfully!`);
 
     // Show next steps
     output.nextSteps([
