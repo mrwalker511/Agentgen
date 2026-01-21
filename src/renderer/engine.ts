@@ -10,6 +10,10 @@ import { loadTemplateFiles } from '../packs/loader.js';
 import { TemplateRenderError } from '../core/errors.js';
 import { logger } from '../core/logger.js';
 
+function escapeRegExp(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 /**
  * Register Handlebars helpers
  */
@@ -52,9 +56,10 @@ function registerHelpers(): void {
     return a && b;
   });
 
-  // Helper: Replace string
+  // Helper: Replace string (treats `search` as a literal string, not a RegExp)
   Handlebars.registerHelper('replace', (str: string, search: string, replacement: string) => {
-    return str.replace(new RegExp(search, 'g'), replacement);
+    if (search === '') return str;
+    return str.replace(new RegExp(escapeRegExp(search), 'g'), replacement);
   });
 }
 
@@ -109,6 +114,8 @@ function templatePathToOutputPath(templatePath: string, context: TemplateContext
  */
 export async function renderPack(pack: Pack, blueprint: Blueprint): Promise<RenderedFile[]> {
   logger.info(`Rendering templates from pack '${pack.metadata.id}'`);
+
+  await Promise.resolve();
 
   const context = buildTemplateContext(blueprint);
   const templateFiles = loadTemplateFiles(pack);

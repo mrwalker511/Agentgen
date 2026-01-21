@@ -7,6 +7,7 @@ import { resolvePath, readFileString, writeFileSafe, pathExists } from '../../co
 import { logger } from '../../core/logger.js';
 import { updateManagedSections, generateManagedSections } from '../../renderer/agent-md.js';
 import { Blueprint } from '../../core/types.js';
+import { BlueprintSchema } from '../../blueprint/schema.js';
 import { AgentgenError } from '../../core/errors.js';
 import * as output from '../output.js';
 
@@ -22,6 +23,8 @@ export async function executeUpdateAgentCommand(
   _options: UpdateAgentOptions
 ): Promise<void> {
   try {
+    await Promise.resolve();
+
     output.heading('🔄 Agentgen - Update AGENT.md');
 
     // Resolve project path
@@ -59,6 +62,16 @@ export async function executeUpdateAgentCommand(
       const message = error instanceof Error ? error.message : String(error);
       throw new AgentgenError(`Failed to parse blueprint: ${message}`);
     }
+
+    const validation = BlueprintSchema.safeParse(blueprint);
+    if (!validation.success) {
+      const issues = validation.error.issues
+        .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
+        .join(', ');
+      throw new AgentgenError(`Invalid blueprint: ${issues}`);
+    }
+    blueprint = validation.data;
+
     output.success('Loaded blueprint');
 
     // Generate new managed sections
